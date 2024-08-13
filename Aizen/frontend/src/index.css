@@ -1,3 +1,37 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+ html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+ 
+        font-family: 'Montserrat';
+      
+    @apply  scrollbar-thin  scrollbar-thumb-primary-green scrollbar-track-transparent;
+  
+}
+/* src/index.css (or your main CSS file) */
+
+
+  
+
+#root {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+ main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+} 
+#form-btn{
+    background-color: #24642B;
+} 
