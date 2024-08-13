@@ -4,4 +4,12 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      'react-dom/client': 'react-dom/client',
+    },
+  },
+  server:{
+    port:3000,
+  }
 })
