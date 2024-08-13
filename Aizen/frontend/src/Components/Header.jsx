@@ -26,6 +26,25 @@ const Header = ({ onSearch, onStoreChange }) => {
       }
     };
 
+    const fetchCartItemCount = async (userId) => {
+      const token = localStorage.getItem('token');
+      if (token && userId) {
+        try {
+          const response = await axios.get('http://localhost:8000/controller/getCartItemsCount.php', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+            params: {
+              user_id: userId,
+            },
+          });
+          setCartItemCount(response.data.count || 0);
+        } catch (error) {
+          console.error('Error fetching cart item count:', error);
+        }
+      }
+    };
+
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
 
@@ -38,24 +57,17 @@ const Header = ({ onSearch, onStoreChange }) => {
             },
           });
 
-          console.log('user:', response.data.user.id);
-          console.log('Role:', response.data.user.role_id);
-
-          // Store user data in local storage
-          // localStorage.setItem('userData', JSON.stringify(response.data.user));
-
-          // Extract roleId from user data
           setRoleId(response.data.user.role_id);
           setUserId(response.data.user.id);
-          console.log("ro:",roleId)
-          console.log('user:', userId)
-          
-          fetchCartItemCount(userId);
+          fetchCartItemCount(response.data.user.id);
+
+          console.log("role : ",response.data.user.role_id);
+          console.log("user : ",response.data.user.id);
           
           // Set up polling to refresh cart item count periodically
           const intervalId = setInterval(() => {
-            fetchCartItemCount(userId);
-          }, 1000); // Poll every 5 seconds
+            fetchCartItemCount(response.data.user.id);
+          }, 1000); // Poll every 1 second
 
           // Clean up the interval on component unmount
           return () => clearInterval(intervalId);
@@ -68,30 +80,13 @@ const Header = ({ onSearch, onStoreChange }) => {
         setRoleId(null);
       }
     };
-    const fetchCartItemCount = async (userId) => {
-      const token = localStorage.getItem('token');
-      if (token && userId) {
-        try {
-          const response = await axios.get('http://localhost:8000/controller/getCartItemsCount.php', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-            params: {
-              user_id: userId
-            }
-          });
-          setCartItemCount(response.data.count || 0);
-          // console.log('Cart Item Count:', response.data.count);
-        } catch (error) {
-          console.error('Error fetching cart item count:', error);
-        }
-      }
-    };
 
     fetchStores();
     checkAuth();
   }, []);
 
+
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -108,15 +103,19 @@ const Header = ({ onSearch, onStoreChange }) => {
   const handleLoginClick = () => {
     navigate('/login');
   };
+
   const handleHomeClick = () => {
     navigate('/');
   };
+
   const handleProductClick = () => {
     navigate('/aizen/all-categories');
   };
-  let handleAboutClick = ()=>{
+
+  const handleAboutClick = () => {
     navigate('/about');
-  }
+  };
+
   const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
@@ -162,8 +161,9 @@ const Header = ({ onSearch, onStoreChange }) => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     setRoleId(null);
+    setUserId(null); // Clear user ID on logout
     setIsProfileDropdownOpen(false);
-    navigate('/*');
+    navigate('/'); // Redirect to home page
   };
 
   return (
@@ -173,7 +173,7 @@ const Header = ({ onSearch, onStoreChange }) => {
           <img src="../../src/assets/a2-logo.png" alt="Logo" className="h-12 w-auto" onClick={handleHomeClick} />
         </div>
 
-        <div className="relative mx-4 ">
+        <div className="relative mx-4">
           <select
             className="bg-white text-green-900 font-semibold p-2 rounded"
             onChange={handleStoreChange}
@@ -209,7 +209,7 @@ const Header = ({ onSearch, onStoreChange }) => {
               Home
             </div>
             <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleProductClick}>Products</div>
-            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleAboutClick} >About</div>
+            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleAboutClick}>About</div>
           </div>
         </div>
 
@@ -227,7 +227,7 @@ const Header = ({ onSearch, onStoreChange }) => {
             <FaUser className="text-2xl cursor-pointer" onClick={handleProfileClick} />
             {isProfileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2">
-                <a href="" className="block px-4 py-2 text-gray-800 hover:bg-gray-200" onClick={handleViewProfile}>
+                <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200" onClick={handleViewProfile}>
                   View Profile
                 </a>
 
