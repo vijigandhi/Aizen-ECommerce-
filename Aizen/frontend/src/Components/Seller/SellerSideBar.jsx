@@ -14,7 +14,7 @@ const Sidebarnav = ({ setSelectedMenuTitle }) => {
   const adminMenu = [
     { title: 'Dashboard', key: 'dashboard', icon: <FaTachometerAlt />,},
     { title: 'Product Management', key: 'productmanagement', icon: <FaStore /> },
-    { title: 'Sales Statistics', key: 'statistics', icon: <FaUsers /> },
+    // { title: 'Sales Statistics', key: 'statistics', icon: <FaUsers /> },
  
     // Add more items as needed
   ];
