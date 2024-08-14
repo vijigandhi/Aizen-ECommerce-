@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 
-const Modal = ({ isOpen, onClose }) => {
-  const [requestDetails, setRequestDetails] = useState('');
-  const [userId, setUserId] = useState(null);
-  const [email, setEmail] = useState(''); // State for email ID
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Track loading state
+let Modal = ({ isOpen, onClose }) => {
+  let [requestDetails, setRequestDetails] = useState('');
+  let [userId, setUserId] = useState(null);
+  let [email, setEmail] = useState(''); // State for email ID
+  let [error, setError] = useState('');
+  let [loading, setLoading] = useState(false); // Track loading state
 
   useEffect(() => {
-    const fetchUserId = async () => {
+    let fetchUserId = async () => {
       try {
-        const token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
         if (!token) {
           setError('Token not found. Please log in again.');
           return;
         }
 
-        const response = await axios.get('http://localhost:8000/controller/Admin/getUserDetails.php', {
+        let response = await axios.get('http://localhost:8000/controller/Admin/getUserDetails.php', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -39,7 +39,7 @@ const Modal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const validateForm = () => {
+  let validateForm = () => {
     if (requestDetails.trim() === '') {
       setError('Request details cannot be empty.');
       return false;
@@ -56,7 +56,7 @@ const Modal = ({ isOpen, onClose }) => {
     return true;
   };
 
-  const handleSubmit = async () => {
+  let handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -64,17 +64,17 @@ const Modal = ({ isOpen, onClose }) => {
     setLoading(true); // Set loading state to true
 
     try {
-      const token = localStorage.getItem('token');
+      let token = localStorage.getItem('token');
       if (!token) {
         toast.error('Token not found. Please log in again.');
         setLoading(false); // Reset loading state
         return;
       }
 
-      const requestData = { details: requestDetails, user_id: userId, email: email };
+      let requestData = { details: requestDetails, user_id: userId, email: email };
       console.log('Sending request with:', requestData);
 
-      const response = await axios.post('http://localhost:8000/controller/profile/vendorRequest.php', 
+      let response = await axios.post('http://localhost:8000/controller/profile/vendorRequest.php', 
         requestData, 
         {
           headers: { Authorization: `Bearer ${token}` }
