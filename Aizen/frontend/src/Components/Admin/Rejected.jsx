@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const Rejected = () => {
   const [requests, setRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [entriesPerPage, setEntriesPerPage] = useState(5);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -18,97 +22,134 @@ const Rejected = () => {
     fetchRequests();
   }, []);
 
-  const handleViewClick = (request) => {
-    setSelectedRequest(request);
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
   };
 
-  const handleCloseModal = () => {
-    setSelectedRequest(null);
+  const sortedRequests = [...requests].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const filteredRequests = sortedRequests.filter((request) =>
+    request.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.request_details.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredRequests.length / entriesPerPage);
+  const paginatedRequests = filteredRequests.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  const handleApprove = () => {
-    console.log('Approved:', selectedRequest.id);
-    handleCloseModal();
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+    }
+    return null;
   };
 
-  const handleReject = () => {
-    console.log('Rejected:', selectedRequest.id);
-    handleCloseModal();
-  };
+  const indexOfFirstEntry = (currentPage - 1) * entriesPerPage + 1;
+  const indexOfLastEntry = Math.min(currentPage * entriesPerPage, filteredRequests.length);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Rejected Requests</h2>
+      {/* <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Rejected Requests</h2> */}
+
+      {/* Search Input and Entries Per Page Dropdown */}
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-300 rounded"
+        />
+        <div className="flex items-center">
+          <label htmlFor="entries" className="mr-2 text-gray-700">Show</label>
+          <select
+            id="entries"
+            value={entriesPerPage}
+            onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+            className="border border-gray-300 rounded py-1 px-2 text-gray-700"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+          <label htmlFor="entries" className="ml-2 text-gray-700">entries</label>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
-              <th className="py-3 px-6 text-left">Request ID</th>
-              <th className="py-3 px-6 text-left">User Name</th>
-              <th className="py-3 px-6 text-left">Details</th>
-              {/* <th className="py-3 px-6 text-center">Actions</th> */}
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('id')}
+              >
+                Request ID {getSortIcon('id')}
+              </th>
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('name')}
+              >
+                User Name {getSortIcon('name')}
+              </th>
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('request_details')}
+              >
+                Details {getSortIcon('request_details')}
+              </th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            {requests.map((request) => (
+            {paginatedRequests.map((request) => (
               <tr key={request.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{request.id}</td>
                 <td className="py-3 px-6">{request.name}</td>
                 <td className="py-3 px-6">{request.request_details}</td>
-                {/* <td className="py-3 px-6 text-center">
-                  <button
-                    className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded transition duration-300"
-                    onClick={() => handleViewClick(request)}
-                  >
-                    View
-                  </button>
-                </td> */}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {selectedRequest && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h3 className="text-lg font-bold mb-4">Request's Detail</h3>
-            <p>
-              <strong>Name:</strong> {selectedRequest.name}
-            </p>
-            <p>
-              <strong>Request Detail:</strong> {selectedRequest.request_details}
-            </p>
-            <p>
-              <strong>Created At:</strong> {new Date(selectedRequest.created_at).toLocaleDateString()}
-            </p>
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
-                onClick={handleApprove}
-              >
-                Approve
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
-                onClick={handleReject}
-              >
-                Reject
-              </button>
-              <button
-                className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition duration-300"
-                onClick={handleCloseModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
+      {/* Pagination Info and Navigation */}
+      <div className="flex justify-between items-center mt-4">
+        <span className="text-gray-700">
+          Showing {indexOfFirstEntry} to {indexOfLastEntry} of {filteredRequests.length} entries
+        </span>
+        <div className="flex justify-center">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-3 py-1 rounded  ${currentPage === index + 1 ? 'bg-primary-green text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
 export default Rejected;
-
-
