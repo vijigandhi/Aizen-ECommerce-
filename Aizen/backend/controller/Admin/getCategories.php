@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: GET');
 
 require 'db_connect.php';
 
-$sql = "SELECT id, name FROM categories";
+$sql = "SELECT id, name, image FROM categories WHERE is_active=1";
 $result = $conn->query($sql);
 $categories = [];
 
