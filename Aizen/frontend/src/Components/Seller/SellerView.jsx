@@ -50,7 +50,7 @@ const SellerView = () => {
     <SellerSideBar setSelectedMenuTitle={setSelectedMenuTitle} />
     </div>
     
-    <div className="flex-1  ml-60">
+    <div className="flex-1  ml-56">
     <Navbar selectedMenuTitle={selectedMenuTitle} />
       <div className="maincontent flex-1 p-4">
         <Routes>

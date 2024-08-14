@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye } from 'react-icons/fa';
+import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import StoreForm from './StoreForm';
 
@@ -11,7 +11,7 @@ const Stores = () => {
   const [selectedStore, setSelectedStore] = useState(null);
   const [showStoreForm, setShowStoreForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [storesPerPage, setStoresPerPage] = useState(10); // Default entries per page
+  const [storesPerPage, setStoresPerPage] = useState(5); // Default entries per page
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -103,6 +103,13 @@ const Stores = () => {
     pageNumbers.push(i);
   }
 
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+    }
+    return null;
+  };
+
   return (
     <div className="p-6 min-h-screen bg-gray-50">
       <div className="flex justify-between items-center mb-8">
@@ -145,17 +152,17 @@ const Stores = () => {
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
-              <th
-                className="py-3 px-6 text-left cursor-pointer"
+            <th
+                className="py-3 px-6  text-left cursor-pointer"
                 onClick={() => handleSort('id')}
               >
-                Store ID
+                Store ID 
               </th>
               <th
-                className="py-3 px-6 text-left cursor-pointer"
+                className="py-3 px-6  text-left cursor-pointer"
                 onClick={() => handleSort('name')}
               >
-                Name
+                Name 
               </th>
               <th
                 className="py-3 px-6 text-center cursor-pointer"
@@ -166,7 +173,7 @@ const Stores = () => {
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm">
+          <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
             {currentStores.map((store) => (
               <tr key={store.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{store.id}</td>
@@ -245,7 +252,15 @@ const Stores = () => {
         </div>
       )}
 
-      {showStoreForm && <StoreForm onClose={toggleStoreForm} />}
+{showStoreForm && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      {/* Your StoreForm content here */}
+      <StoreForm onClose={toggleStoreForm} />
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
