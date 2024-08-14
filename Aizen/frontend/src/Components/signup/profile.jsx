@@ -3,6 +3,7 @@ import axios from 'axios';
 import Header from '../Header';
 import Modal from './vendorpopup'; // Ensure this path is correct
 import { toast, ToastContainer } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = ({ setProfileOpen }) => {
@@ -10,7 +11,7 @@ const Profile = ({ setProfileOpen }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState('https://via.placeholder.com/150');
+  const [imageUrl, setImageUrl] = useState('https://static.thenounproject.com/png/547804-200.png');
   const [avatarFile, setAvatarFile] = useState(null);
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState('');
@@ -66,7 +67,7 @@ const Profile = ({ setProfileOpen }) => {
 
         setProfile(response.data);
         setFormData(response.data);
-        setImageUrl(response.data.avatar || 'https://via.placeholder.com/150');
+        setImageUrl(response.data.avatar || 'https://static.thenounproject.com/png/547804-200.png');
       } catch (error) {
         console.error('Error fetching profile:', error.response?.data || error.message);
       }
@@ -183,22 +184,30 @@ const Profile = ({ setProfileOpen }) => {
   return (
     <>
       <Header />
-      <section className="p-6 max-w-4xl mx-auto">
-        <div className={`bg-white shadow-lg rounded-lg p-6 ${isEditing ? 'mt-0' : 'mt-24'}`}>
+      {/* <section className="p-6 max-w-4xl mx-auto"> */}
+        <div className={` max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 ${isEditing ? 'mt-12' : 'mt-12'}`}>
           <div className="flex items-center mb-6">
-            <div className="w-24 h-24 rounded-full overflow-hidden mr-6 cursor-pointer" onClick={() => document.getElementById('fileInput').click()}>
+          <div
+            className="w-24 h-24 rounded-full overflow-hidden mr-6 cursor-pointer"
+            onClick={() => {
+              if (isEditing) {
+                document.getElementById('fileInput').click();
+              } 
+            }}
+            >
               <img src={imageUrl} alt="Profile Avatar" className="w-full h-full object-cover" />
             </div>
+
             <div>
               <h2 className="text-2xl font-semibold">{profile.name}</h2>
-              <p className="text-gray-600">{profile.email}</p>
+              <p className="text-gray-600 mt-2">{profile.email}</p>
             </div>
           </div>
           <div>
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-900">
                     Username <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -217,7 +226,7 @@ const Profile = ({ setProfileOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Email <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -238,7 +247,7 @@ const Profile = ({ setProfileOpen }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Mobile <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -259,7 +268,7 @@ const Profile = ({ setProfileOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Address Line 1 <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -278,7 +287,7 @@ const Profile = ({ setProfileOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Address Line 2 <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -297,7 +306,7 @@ const Profile = ({ setProfileOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Address Line 3 <span className="text-red-500">*</span>
                   </label>
                   {isEditing ? (
@@ -322,7 +331,7 @@ const Profile = ({ setProfileOpen }) => {
                     <button
                       type="button"
                       onClick={handleSaveClick}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                      className="bg-green-500 text-white px-4 py-2 rounded-md mr-2"
                     >
                       Save
                     </button>
@@ -338,7 +347,7 @@ const Profile = ({ setProfileOpen }) => {
                   <button
                     type="button"
                     onClick={handleEditClick}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-md"
                   >
                     Edit Profile
                   </button>
@@ -353,8 +362,7 @@ const Profile = ({ setProfileOpen }) => {
               />
             </form>
           </div>
-          </div><br />
-        <p>
+          <p>
           Interested in becoming a{' '}
           <a
             href="#"
@@ -366,9 +374,9 @@ const Profile = ({ setProfileOpen }) => {
       </p>
     {isModalOpen && <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
 
-        {/* </div> */}
-      </section>
       <ToastContainer />
+          </div><br />
+        
       
     </>
   );

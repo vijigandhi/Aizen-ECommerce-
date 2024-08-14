@@ -14,14 +14,14 @@ const CartItem = ({ product, fetchCartItems, userId }) => {
       console.error('Missing parameters for updateQuantity');
       return;
     }
-  
+
     try {
       console.log('Sending request to update quantity with params:', {
         cart_item_id: cartItemId,
         quantity: newQuantity,
         action: 'update_quantity'
       });
-  
+
       const response = await axios.post(
         'http://localhost:8000/controller/cart.php',
         {
@@ -33,20 +33,24 @@ const CartItem = ({ product, fetchCartItems, userId }) => {
           headers: { 'Content-Type': 'application/json' }
         }
       );
-  
+
       console.log('Response from updateQuantity:', response.data);
-  
+
       if (response.data.success) {
         console.log('Updated cart item quantity:', response.data.message);
         fetchCartItems(userId); // Refresh cart items
       } else {
         console.error('Error updating cart item quantity:', response.data.message);
+        // Revert to previous quantity if update fails
+        setQuantity(product.quantity);
       }
     } catch (error) {
       console.error('Error updating cart item quantity:', error.response ? error.response.data : error.message);
+      // Revert to previous quantity if update fails
+      setQuantity(product.quantity);
     }
   };
-  
+
   const handleQuantityChange = async (delta) => {
     if (isUpdating) return; // Prevent multiple updates while updating
 
@@ -71,6 +75,8 @@ const CartItem = ({ product, fetchCartItems, userId }) => {
         await fetchCartItems(userId);
       } catch (error) {
         console.error('Error in handleQuantityChange:', error.message);
+        // Revert to previous quantity if error occurs
+        setQuantity(product.quantity);
       } finally {
         setIsUpdating(false);
       }
@@ -107,7 +113,7 @@ const CartItem = ({ product, fetchCartItems, userId }) => {
 
   // Calculate the total price for the current quantity
   const totalPrice = (Number(product.special_price) * quantity).toFixed(2);
-  
+
   return (
     <li className="flex py-6">
       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
