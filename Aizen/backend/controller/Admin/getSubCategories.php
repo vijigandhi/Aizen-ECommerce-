@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 require 'db_connect.php'; // Include your database connection file
 
-$sql = "SELECT id, name FROM subcategories";
+$sql = "SELECT * FROM subcategories";
 $result = $conn->query($sql);
 $subcategories = [];
 

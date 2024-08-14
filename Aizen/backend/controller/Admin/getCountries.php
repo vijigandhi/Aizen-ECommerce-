@@ -7,7 +7,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 require 'db_connect.php'; // Adjust the path as needed
 
 // Fetch countries
-$sql = "SELECT id, name FROM countries"; // Adjust column names if necessary
+$sql = "SELECT * FROM countries"; // Adjust column names if necessary
 $result = $conn->query($sql);
 
 $countries = [];
