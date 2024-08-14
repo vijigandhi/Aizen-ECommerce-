@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const NewRequests = () => {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [requestsPerPage, setRequestsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -17,6 +22,51 @@ const NewRequests = () => {
 
     fetchRequests();
   }, []);
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRequests = [...requests].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const filteredRequests = sortedRequests.filter(request =>
+    request.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleRequestsPerPageChange = (event) => {
+    setRequestsPerPage(Number(event.target.value));
+    setCurrentPage(1);
+  };
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredRequests.length / requestsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+    }
+    return null;
+  };
 
   const handleViewClick = (request) => {
     setSelectedRequest(request);
@@ -38,19 +88,59 @@ const NewRequests = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">New Requests</h2>
+      <div className="flex justify-between items-center mb-4">
+        {/* <h2 className="text-3xl font-bold text-gray-800">New Requests</h2> */}
+        <input
+          type="text"
+          placeholder="Search by Name"
+          className="p-2 border border-gray-300 rounded"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <div>
+          <label htmlFor="entries" className="mr-2 text-gray-700">Show</label>
+          <select
+            id="entries"
+            value={requestsPerPage}
+            onChange={handleRequestsPerPageChange}
+            className="border border-gray-300 rounded py-1 px-2 text-gray-700"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <label htmlFor="entries" className="ml-2 text-gray-700">entries</label>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
-              <th className="py-3 px-6 text-left">Request ID</th>
-              <th className="py-3 px-6 text-left">User Name</th>
-              <th className="py-3 px-6 text-left">Details</th>
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('id')}
+              >
+                Request ID {getSortIcon('id')}
+              </th>
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('name')}
+              >
+                User Name {getSortIcon('name')}
+              </th>
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
+                onClick={() => handleSort('request_details')}
+              >
+                Details {getSortIcon('request_details')}
+              </th>
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            {requests.map((request) => (
+            {currentRequests.map((request) => (
               <tr key={request.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{request.id}</td>
                 <td className="py-3 px-6">{request.name}</td>
@@ -67,6 +157,23 @@ const NewRequests = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          Showing {indexOfFirstRequest + 1} to {indexOfLastRequest > filteredRequests.length ? filteredRequests.length : indexOfLastRequest} of {filteredRequests.length} entries
+        </div>
+        <div className="flex space-x-1">
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
+            >
+              {number}
+            </button>
+          ))}
+        </div>
       </div>
 
       {selectedRequest && (

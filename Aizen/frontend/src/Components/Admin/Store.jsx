@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye } from 'react-icons/fa';
+import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import StoreForm from './StoreForm';
 
@@ -10,6 +10,8 @@ const Stores = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [selectedStore, setSelectedStore] = useState(null);
   const [showStoreForm, setShowStoreForm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [storesPerPage, setStoresPerPage] = useState(5); // Default entries per page
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -85,6 +87,29 @@ const Stores = () => {
     store.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const indexOfLastStore = currentPage * storesPerPage;
+  const indexOfFirstStore = indexOfLastStore - storesPerPage;
+  const currentStores = filteredStores.slice(indexOfFirstStore, indexOfLastStore);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleStoresPerPageChange = (event) => {
+    setStoresPerPage(Number(event.target.value));
+    setCurrentPage(1); // Reset to first page when entries per page change
+  };
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredStores.length / storesPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+    }
+    return null;
+  };
+
   return (
     <div className="p-6 min-h-screen bg-gray-50">
       <div className="flex justify-between items-center mb-8">
@@ -99,7 +124,7 @@ const Stores = () => {
           <MdOutlineAddCircleOutline className="mr-2" /> Add New Store
         </button>
       </div>
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between items-center mb-4">
         <input
           type="text"
           placeholder="Search Store by Name"
@@ -107,22 +132,37 @@ const Stores = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <div>
+          <label htmlFor="entries" className="mr-2 text-gray-700">Show</label>
+          <select
+            id="entries"
+            value={storesPerPage}
+            onChange={handleStoresPerPageChange}
+            className="border border-gray-300 rounded py-1 px-2 text-gray-700"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <label htmlFor="entries" className="ml-2 text-gray-700">entries</label>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
-              <th
-                className="py-3 px-6 text-left cursor-pointer"
+            <th
+                className="py-3 px-6  text-left cursor-pointer"
                 onClick={() => handleSort('id')}
               >
-                Store ID
+                Store ID 
               </th>
               <th
-                className="py-3 px-6 text-left cursor-pointer"
+                className="py-3 px-6  text-left cursor-pointer"
                 onClick={() => handleSort('name')}
               >
-                Name
+                Name 
               </th>
               <th
                 className="py-3 px-6 text-center cursor-pointer"
@@ -133,8 +173,8 @@ const Stores = () => {
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm">
-            {filteredStores.map((store) => (
+          <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
+            {currentStores.map((store) => (
               <tr key={store.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{store.id}</td>
                 <td className="py-3 px-6">{store.name}</td>
@@ -172,6 +212,23 @@ const Stores = () => {
         </table>
       </div>
 
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          Showing {indexOfFirstStore + 1} to {indexOfLastStore > filteredStores.length ? filteredStores.length : indexOfLastStore} of {filteredStores.length} entries
+        </div>
+        <div className="flex space-x-1">
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
+            >
+              {number}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {selectedStore && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
@@ -183,51 +240,27 @@ const Stores = () => {
               <strong>Name:</strong> {selectedStore.name}
             </p>
             <p>
-              <strong>Address Line 1:</strong> {selectedStore.address_line1}
+              <strong>Status:</strong> {selectedStore.is_active === 1 ? 'Active' : 'Inactive'}
             </p>
-            <p>
-              <strong>Address Line 2:</strong> {selectedStore.address_line2 || 'N/A'}
-            </p>
-            <p>
-              <strong>Address Line 3:</strong> {selectedStore.address_line3 || 'N/A'}
-            </p>
-            <p>
-              <strong>City ID:</strong> {selectedStore.city_id}
-            </p>
-            <p>
-              <strong>State ID:</strong> {selectedStore.state_id}
-            </p>
-            <p>
-              <strong>Pincode:</strong> {selectedStore.pincode}
-            </p>
-            <p>
-              <strong>Country ID:</strong> {selectedStore.country_id}
-            </p>
-            <p>
-              <strong>Created At:</strong> {new Date(selectedStore.created_at).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>Updated At:</strong> {new Date(selectedStore.updated_at).toLocaleDateString()}
-            </p>
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition duration-300"
-                onClick={handleCloseModal}
-              >
-                Close
-              </button>
-            </div>
+            <button
+              className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
+              onClick={handleCloseModal}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
 
-      {showStoreForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg relative">
-            <StoreForm onClose={toggleStoreForm} />
-          </div>
-        </div>
-      )}
+{showStoreForm && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      {/* Your StoreForm content here */}
+      <StoreForm onClose={toggleStoreForm} />
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
