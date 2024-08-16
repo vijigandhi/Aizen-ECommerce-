@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 require 'db_connect.php';
 
-$sql = "SELECT id, name FROM states";
+$sql = "SELECT * FROM states";
 $result = $conn->query($sql);
 $states = [];
 

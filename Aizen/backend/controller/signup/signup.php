@@ -89,17 +89,96 @@ try {
             $mail->Subject = 'Registration Successful';
 
         
-            $imageUrl = 'https://i.pinimg.com/564x/db/a8/db/dba8dbeae2578bb41f489ac0b0c716bc.jpg';
+            $imageUrl = 'https://static.vecteezy.com/system/resources/previews/002/823/532/non_2x/welcome-to-hotel-flat-color-illustration-hospitality-business-accommodation-service-hall-porter-doorman-resort-manager-working-staff-isolated-cartoon-characters-on-white-vector.jpg';
+           
 
             $mail->Body = '
-                <html>
-                <body>
-                    <strong>Hi ' . htmlspecialchars($firstname) . ',</strong> . <br>
-                    <strong>Welcome! Your registration is complete. Dive into premium farm products and experience the natural goodness awaiting you!".</strong> . <br>
-                    <p><img src="' . $imageUrl . '" alt="Welcome Image" style="width:100%; max-width:600px; height:auto; display:block;"></p>
-                </body>
-                </html>
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        color: #333;
+                        line-height: 1.6;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f4f4f4;
+                    }
+                    .container {
+                           max-width: 600px;
+                            margin: auto;
+                            background: #f9f9f9;
+                            border-radius: 8px;
+                            overflow: hidden;
+                            padding: 20px;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    }
+                    .header {
+                        background: black;
+                        color: #fff;
+                        padding: 20px;
+                        text-align: center;
+                    }
+                    .header img {
+                        max-width: 150px;
+                    }
+                    .content {
+                        padding: 20px;
+                    }
+                    .content h2 {
+                        color: green;
+                        font-size: 24px;
+                        margin-bottom: 10px;
+                    }
+                    .content p {
+                        margin: 0 0 15px;
+                    }
+                    .content img {
+                        max-width: 100%;
+                        height: auto;
+                        display: block;
+                        margin: 20px 0;
+                    }
+                    .footer {
+                        background: black;
+                        color: #666;
+                        padding: 20px;
+                        text-align: center;
+                        font-size: 12px;
+                    }
+                    .footer p {
+                        color: white;
+                        text-decoration: none;
+                    }
+                    .logo {
+                            font-family: Montserrat, cursive;
+                            color: #4CAF50; /* Green color */
+                            font-size: 48px; /* Large font size */
+                            font-weight: bold;
+                            text-align: center;
+                            margin: 20px 0;
+                        }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1 class="logo">Welcome to Aizen</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Hi ' . htmlspecialchars($firstname) . ',</h2>
+                        <p>Welcome! Your registration is completed.</p>
+                        <img src="' . $imageUrl . '" alt="Welcome Image">
+                        <p>If you have any questions, feel free to <a href="mailto:aizendckap@gmail.com">contact us</a>.</p>
+                    </div>
+                    <div class="footer">
+                       <p>&copy; ' . date("Y") . ' Aizen. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
             ';
+            
 
             $mail->send();
 

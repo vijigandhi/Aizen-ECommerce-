@@ -208,7 +208,7 @@ const Header = ({ onSearch, onStoreChange }) => {
             <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleHomeClick}>
               Home
             </div>
-            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleProductClick}>Products</div>
+            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleProductClick}>All Products</div>
             <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleAboutClick}>About</div>
           </div>
         </div>
