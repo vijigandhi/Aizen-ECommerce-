@@ -35,3 +35,63 @@
 #form-btn{
     background-color: #24642B;
 } 
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4caf50; /* Green color */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Light gray background for track */
+  }
+  
+  /* Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin; /* Thin scrollbar */
+    scrollbar-color: #4caf50 #f1f1f1; /* Green scrollbar with light gray track */
+  }
+  /* Custom arrow styles with vibrant green color */
+  .slick-prev,
+  .slick-next {
+    width: 3rem;
+    height: 3rem;
+    background-color: white; /* Vibrant green background */
+    color: #fff; /* White arrow */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .slick-prev {
+    left: -3rem; /* Adjusted for better positioning */
+  }
+  
+  .slick-next {
+    right: -3rem; /* Adjusted for better positioning */
+  }
+  
+  .slick-prev:before, .slick-next:before {
+    font-family: 'slick';
+    font-size: 30px;
+    line-height: 1;
+    position: relative;
+    opacity: .75;
+    color: #28a745;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    left: 0.7rem;
+}
+  
