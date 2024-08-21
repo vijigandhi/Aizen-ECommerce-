@@ -30,19 +30,29 @@ if (strpos($authHeader, 'Bearer ') === 0) {
 
         // Check if the token is valid
         if ($decoded) {
-            // Extract user details from decoded token
-            $userId = $decoded['sub'];
-            $email = $decoded['email'];
-            $roleId = $decoded['role_id'];
+           $userId = $decoded['sub'];
+            $conn = new DbConnect();
+            $pdo = $conn->connect();
 
-            // Return user details
-            $response['status'] = 'success';
-            $response['message'] = 'User details retrieved successfully';
-            $response['user'] = [
-                'id' => $userId,
-                'email' => $email,
-                'role_id' => $roleId
-            ];
+            $stmt = $pdo->prepare('SELECT id, email, role_id FROM users WHERE id = :userId');
+            $stmt->bindParam(':userId', $userId);
+            $stmt->execute();
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                $response['status'] = 'success';
+                $response['message'] = 'User details retrieved successfully';
+                $response['user'] = [
+                    'id' => $user['id'],
+                    'email' => $user['email'],
+                    'role_id' => $user['role_id']
+                ];
+            } else {
+                $response['status'] = 'error';
+                $response['message'] = 'User not found';
+            }
+
         } else {
             $response['status'] = 'error';
             $response['message'] = 'Invalid token';
