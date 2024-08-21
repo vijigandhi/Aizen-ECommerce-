@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
 const GoogleSignup = ({ onSuccess }) => {
   const responseMessage = (response) => {
-    onSuccess(response); // Call onSuccess prop with Google response
+    onSuccess(response); 
   };
 
   const errorMessage = (error) => {
@@ -14,7 +13,7 @@ const GoogleSignup = ({ onSuccess }) => {
   return (
     <div className="flex items-center justify-center mt-2 flex-wrap">
       <GoogleLogin
-        clientId="455299441373-bcbmb0erivqkh60p8a77v6sg371pnnkj.apps.googleusercontent.com" // Replace with your Google client ID
+        clientId="995387049773-1l8a7e3q87cp7d38i18lfr09au8027rr.apps.googleusercontent.com" 
         onSuccess={responseMessage}
         onError={errorMessage}
         render={(renderProps) => (
