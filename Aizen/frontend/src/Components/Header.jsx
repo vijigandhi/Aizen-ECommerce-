@@ -67,7 +67,7 @@ const Header = ({ onSearch, onStoreChange }) => {
           // Set up polling to refresh cart item count periodically
           const intervalId = setInterval(() => {
             fetchCartItemCount(response.data.user.id);
-          }, 1000); // Poll every 1 second
+          }, 1000); 
 
           // Clean up the interval on component unmount
           return () => clearInterval(intervalId);
@@ -125,7 +125,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleCartClick = () => {
-    navigate('/aizen/cart');
+    navigate('/home/cart');
   };
 
   const handleAdminPanelClick = () => {

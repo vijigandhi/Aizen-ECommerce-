@@ -26,7 +26,7 @@ const RouterComponent = () => {
       <div>
         
         <Routes>
-        <Route path="/home" element={<Homepage />} />
+        <Route path="/home/*" element={<Homepage />} />
         <Route path="/*" element={<Homepage />} />
         <Route path="/about" element={<Homepage />} />
           <Route path="/aizen/*" element={<AizenView />} />
@@ -39,7 +39,7 @@ const RouterComponent = () => {
           <Route path="/sign" element={<RegistartionForm />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/access-denied" element={<AccessDenied />} /> 
-         
+          <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/viewcart" element={<ViewCart />} />
         </Routes>
