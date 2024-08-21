@@ -19,6 +19,7 @@ const SignupForm = () => {
   const [serverEmailError, setServerEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const responseMessage = (response) => {
@@ -52,7 +53,6 @@ const SignupForm = () => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
 
-  
     if (id === "email") {
       if (!value) {
         setErrors((prevErrors) => ({ ...prevErrors, email: "Email is required" }));
@@ -70,11 +70,10 @@ const SignupForm = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      // setTimeout(() => {
-      //   setErrors({});
-      // }, 3000);
       return;
     }
+
+    setLoading(true); // Set loading to true before making the request
 
     try {
       const response = await axios.post(
@@ -109,13 +108,16 @@ const SignupForm = () => {
           password: "",
           confirmPassword: "",
         });
+        setLoading(false); // Set loading to false before navigating
         navigate("/login"); // Redirect to login page after successful registration
       } else {
         setServerEmailError(responseData.message || "Registration failed. Please try again.");
+        setLoading(false); // Set loading to false in case of error
       }
     } catch (error) {
       console.error("Error during signup:", error);
       setServerEmailError("An unexpected error occurred. Please try again.");
+      setLoading(false); // Set loading to false in case of error
     }
   };
 
@@ -205,19 +207,23 @@ const SignupForm = () => {
                 </div>
                 {errors.confirmPassword && <p className="absolute text-red-500 text-xs">{errors.confirmPassword}</p>}
               </div>
-              <button className="mt-4 tracking-wide font-semibold bg-[#4CAF50] text-gray-100 min-w-[120px] py-2 px-4 rounded-lg hover:bg-['#4CAF50'] transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="8.5" cy="7" r="4" />
-                  <path d="M20 8v6M23 11h-6" />
-                </svg>
+              <button
+                type="submit"
+                className="mt-4 tracking-wide font-semibold bg-[#4CAF50] text-gray-100 min-w-[120px] py-2 px-4 rounded-lg hover:bg-['#4CAF50'] transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                disabled={loading} // Disable button while loading
+              >
+                {loading ? (
+                  <svg className="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path d="M4 12a8 8 0 0116 0 8 8 0 01-16 0" fill="none" stroke="currentColor" strokeWidth="4"></path>
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <path d="M20 8v6M23 11h-6" />
+                  </svg>
+                )}
                 <span className="text-sm">Sign Up</span>
               </button>
               <div className="flex items-center justify-center mt-2 flex-wrap">

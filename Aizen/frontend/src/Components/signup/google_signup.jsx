@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { toast, ToastContainer } from 'react-toastify';
@@ -88,6 +89,7 @@ const GoogleSignup = () => {
       console.error('Error:', error.message);
       toast.error('An error occurred during registration: ' + error.message);
     }
+
   };
 
   const errorMessage = (error) => {
@@ -117,6 +119,7 @@ const GoogleSignup = () => {
         />
       </GoogleOAuthProvider>
       <ToastContainer />
+
     </div>
   );
 };
