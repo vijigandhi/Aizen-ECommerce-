@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import Slider from 'react-slick';
 import { useInView } from 'react-intersection-observer';
 import Banner from './Banner';
@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import ProductCard from './ProductCard';
 import Header from '../Header';
 import Footer from '../Footer';
+import Cart from '../cart/cart';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -108,95 +109,65 @@ const HomePage = () => {
         <Banner images={images} />
       </div>
       <div className="container mx-auto p-4">
+      <Routes>
+            
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
         {/* Top Products Section */}
         <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <h2 className="text-2xl font-bold text-center mb-4">Top Products</h2>
           <Slider
-            dots={false}
-            infinite={true}
-            speed={500}
-            slidesToShow={4}
-            slidesToScroll={1}
-            prevArrow={
-              <div
-                className="slick-prev"
-                style={{
-                  width: '3rem',
-                  height: '3rem',
-                  backgroundColor: '#fff',
-                  color: '#28a745',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  left: '-56px',
-                  position: 'absolute',
-                  zIndex: 10,
-                  top: '50%',
-                  transform: 'translateY(-50%)'
-                }}
-              >
-                {'<'}
-              </div>
-            }
-            nextArrow={
-              <div
-                className="slick-next"
-                style={{
-                  width: '3rem',
-                  height: '3rem',
-                  backgroundColor: '#fff',
-                  color: '#28a745',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  right: '20px',
-                  position: 'absolute',
-                  zIndex: 10,
-                  top: '50%',
-                  transform: 'translateY(-50%)'
-                }}
-              >
-                {'>'}
-              </div>
-            }
-            responsive={[
-              {
-                breakpoint: 1024,
-                settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 1,
-                },
-              },
-              {
-                breakpoint: 600,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                },
-              },
-              {
-                breakpoint: 480,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                },
-              },
-            ]}
-          >
-            {popularProducts.slice(0, 10).map((product) => (
-              <div key={product.id} className="p-2" onClick={() => handleProductClick(product.id)}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </Slider>
+  dots={false}
+  infinite={true}
+  speed={500}
+  slidesToShow={4}
+  slidesToScroll={1}
+  prevArrow={
+    <div
+      className="w-12 h-12 bg-white text-green-500 rounded-full flex items-center justify-center shadow-lg cursor-pointer text-3xl absolute left-[-1.5rem] top-1/2 transform -translate-y-1/2 z-10"
+    >
+      
+    </div>
+  }
+  nextArrow={
+    <div
+      className="w-12 h-12 bg-white text-green-500 rounded-full flex items-center justify-center shadow-lg cursor-pointer text-3xl absolute right-[-1.5rem] top-1/2 transform -translate-y-1/2 z-10"
+    >
+    
+    </div>
+  }
+  responsive={[
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      },
+    },
+  ]}
+>
+  {popularProducts.slice(0, 10).map((product) => (
+    <div key={product.id} className="p-2" onClick={() => handleProductClick(product.id)}>
+      <ProductCard product={product} />
+    </div>
+  ))}
+</Slider>
+
+
         </section>
 
         {/* Categories Section */}
