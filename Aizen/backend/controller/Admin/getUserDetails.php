@@ -7,30 +7,32 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 header("Access-Control-Allow-Credentials: true");
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    // Handle preflight requests
     http_response_code(200);
     exit();
 }
 
 require_once '../../vendor/autoload.php';
 require_once '../../model/Connection.php';
-require_once '../../utils/jwt.php'; // Include JWT functions
+require_once '../../utils/jwt.php';
 
 $response = [];
+
+use Google\Client as GoogleClient;
 
 $headers = apache_request_headers();
 $authHeader = $headers['Authorization'] ?? '';
 
 if (strpos($authHeader, 'Bearer ') === 0) {
     $token = str_replace('Bearer ', '', $authHeader);
-    $key = '2dafac1e167d361ac1270103f471a562fb89207ffae675a20a2137ee1fd0359f'; // Replace with your secret key
+    $key = '2dafac1e167d361ac1270103f471a562fb89207ffae675a20a2137ee1fd0359f'; // Your JWT secret key
 
     try {
         $decoded = decodeJWT($token, $key);
 
-        // Check if the token is valid
         if ($decoded) {
-           $userId = $decoded['sub'];
+
+            $userId = $decoded['sub'];
+
             $conn = new DbConnect();
             $pdo = $conn->connect();
 

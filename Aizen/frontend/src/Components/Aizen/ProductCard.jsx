@@ -39,8 +39,10 @@ const ProductCard = ({ product }) => {
     }
 
     if (!customerId) {
+
       toast.error('User not Loged in. Redirecting to login page.');
       navigate('/login'); 
+
       return;
     }
 

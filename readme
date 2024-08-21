@@ -5,10 +5,15 @@ Home : npm install react-intersection-observer
 cart : npm install @fortawesome/react-fontawesome
 cart : npm install @fortawesome/free-solid-svg-icons
 Checkout: npm install sweetalert2
-
-Checkout: npm install sweetalert2
+Google Signup: npm install @react-oauth/google
 
 
 Backend:-
+  Google-signup:  
+              composer require league/oauth2-server
+              composer require league/oauth2-client
+              composer require google/apiclient
+              composer update google/apiclient
+
 
 
