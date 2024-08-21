@@ -204,7 +204,7 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
                 <div className="flex">
                   <button
                     type="button"
-                    className="font-medium text-red-600 hover:text-red-500"
+                    className="font-medium text-primary-green hover:text-green-900"
                     onClick={() => handleQuantityChange(item.cart_item_id, -item.quantity)}
                     disabled={isUpdating}
                   >

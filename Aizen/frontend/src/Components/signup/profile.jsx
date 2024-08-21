@@ -325,7 +325,7 @@ const Profile = ({ setProfileOpen }) => {
             <div className="flex justify-end mt-6 space-x-4">
               <button
                 onClick={handleSaveClick}
-                className="bg-green-500 text-white py-2 px-4 rounded-md shadow hover:bg-green-600"
+                className="bg-primary-green text-white py-2 px-4 rounded-md shadow hover:bg-green-600"
               >
                 Save
               </button>
@@ -340,7 +340,7 @@ const Profile = ({ setProfileOpen }) => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={handleEditClick}
-                className="bg-blue-500 text-white py-2 px-4 rounded-md shadow hover:bg-blue-600"
+                className="bg-secondary-yellow text-white py-2 px-4 rounded-md shadow hover:bg-yellow-500"
               >
                 Edit
               </button>

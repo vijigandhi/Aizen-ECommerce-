@@ -296,7 +296,7 @@ const Checkout = () => {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-md"
+                      className="w-full bg-primary-green text-white py-2 px-4 rounded-md"
                     >
                       Next
                     </button>
