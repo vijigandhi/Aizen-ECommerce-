@@ -30,7 +30,9 @@ if (strpos($authHeader, 'Bearer ') === 0) {
         $decoded = decodeJWT($token, $key);
 
         if ($decoded) {
+
             $userId = $decoded['sub'];
+
             $conn = new DbConnect();
             $pdo = $conn->connect();
 
@@ -52,6 +54,7 @@ if (strpos($authHeader, 'Bearer ') === 0) {
                 $response['status'] = 'error';
                 $response['message'] = 'User not found';
             }
+
         } else {
             $response['status'] = 'error';
             $response['message'] = 'Invalid token';

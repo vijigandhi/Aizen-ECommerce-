@@ -73,7 +73,14 @@ const ProductDetails = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!product || product.quantity === 0 || !customerId) return;
+    if (!product || product.quantity === 0 ) {
+      return
+    };
+    if (!customerId) {
+      toast.error('User not Loged in. Redirecting to login page.');
+      navigate('/login'); 
+      return;
+    }
 
     const payload = {
       customer_id: customerId,

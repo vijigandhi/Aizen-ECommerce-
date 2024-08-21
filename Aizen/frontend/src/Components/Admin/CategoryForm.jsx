@@ -4,9 +4,33 @@ const CategoryForm = ({ onClose }) => {
   const [categoryName, setCategoryName] = useState('');
   const [categoryDescription, setCategoryDescription] = useState('');
   const [categoryImage, setCategoryImage] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!categoryName.trim()) {
+      errors.categoryName = 'Category name is required';
+    }
+
+    if (!categoryDescription.trim()) {
+      errors.categoryDescription = 'Description is required';
+    }
+
+    if (!categoryImage) {
+      errors.categoryImage = 'Category image is required';
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append('name', categoryName);
@@ -34,6 +58,24 @@ const CategoryForm = ({ onClose }) => {
     }
   };
 
+  // Error clearing logic for each input
+  const handleInputChange = (field, value) => {
+    // Update the respective field value
+    if (field === 'categoryName') {
+      setCategoryName(value);
+    } else if (field === 'categoryDescription') {
+      setCategoryDescription(value);
+    } else if (field === 'categoryImage') {
+      setCategoryImage(value);
+    }
+
+    // Clear the error for the specific field if there was an error
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: '',
+    }));
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
       <div className="relative bg-white p-6 rounded-lg shadow-lg">
@@ -46,7 +88,11 @@ const CategoryForm = ({ onClose }) => {
           </svg>
         </button>
         <h2 className="text-xl font-bold mb-4">Add New Category</h2>
-        <form className="max-w-md mx-auto p-4" onSubmit={handleSubmit}>
+        <form
+          className="max-w-md mx-auto p-4 overflow-y-auto"
+          onSubmit={handleSubmit}
+          style={{ height: '360px' }}
+        >
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryName">
               Category Name
@@ -55,10 +101,12 @@ const CategoryForm = ({ onClose }) => {
               type="text"
               id="categoryName"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              onChange={(e) => handleInputChange('categoryName', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
             />
+            {errors.categoryName && (
+              <p className="text-red-500 text-xs mt-1">{errors.categoryName}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryDescription">
@@ -67,10 +115,12 @@ const CategoryForm = ({ onClose }) => {
             <textarea
               id="categoryDescription"
               value={categoryDescription}
-              onChange={(e) => setCategoryDescription(e.target.value)}
+              onChange={(e) => handleInputChange('categoryDescription', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            ></textarea>
+            />
+            {errors.categoryDescription && (
+              <p className="text-red-500 text-xs mt-1">{errors.categoryDescription}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryImage">
@@ -79,15 +129,17 @@ const CategoryForm = ({ onClose }) => {
             <input
               type="file"
               id="categoryImage"
-              onChange={(e) => setCategoryImage(e.target.files[0])}
+              onChange={(e) => handleInputChange('categoryImage', e.target.files[0])}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
             />
+            {errors.categoryImage && (
+              <p className="text-red-500 text-xs mt-1">{errors.categoryImage}</p>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-primary-green hover:bg-green-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Add Category
             </button>
@@ -99,4 +151,3 @@ const CategoryForm = ({ onClose }) => {
 };
 
 export default CategoryForm;
-

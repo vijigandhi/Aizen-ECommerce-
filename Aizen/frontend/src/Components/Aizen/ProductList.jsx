@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
@@ -87,6 +89,7 @@ const ProductsList = ({ searchTerm, storeId }) => {
 
   return (
     <div>
+     
       <h2 className="text-xl font-bold py-2">All Products</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 m-6 ml-1">
         {visibleProducts.map((product) => (
