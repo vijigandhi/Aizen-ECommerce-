@@ -67,7 +67,7 @@ const Header = ({ onSearch, onStoreChange }) => {
           // Set up polling to refresh cart item count periodically
           const intervalId = setInterval(() => {
             fetchCartItemCount(response.data.user.id);
-          }, 1000); // Poll every 1 second
+          }, 1000); 
 
           // Clean up the interval on component unmount
           return () => clearInterval(intervalId);
@@ -105,7 +105,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleHomeClick = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   const handleProductClick = () => {
@@ -125,7 +125,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleCartClick = () => {
-    navigate('/aizen/cart');
+    navigate('/home/cart');
   };
 
   const handleAdminPanelClick = () => {
@@ -135,7 +135,18 @@ const Header = ({ onSearch, onStoreChange }) => {
   const handleSellerPortalClick = () => {
     navigate('/aizen-seller/');
   };
-
+  const getActiveClass = (path) => {
+    if (path === '/home') {
+      return location.pathname === '/home' ? 'text-white font-bold' : 'text-green-900';
+    }
+    if (path === '/aizen/all-categories') {
+      return location.pathname.startsWith('/aizen/all-categories') ? 'text-white font-bold' : 'text-green-900';
+    }
+    if (path === '/about') {
+      return location.pathname === '/about' ? 'text-white font-bold' : 'text-green-900';
+    }
+    return 'text-green-900';
+  };
   const handleStoreChange = (event) => {
     const storeId = event.target.value;
     setSelectedStoreId(storeId);
@@ -163,11 +174,11 @@ const Header = ({ onSearch, onStoreChange }) => {
     setRoleId(null);
     setUserId(null); // Clear user ID on logout
     setIsProfileDropdownOpen(false);
-    navigate('/'); // Redirect to home page
+    navigate('/home'); // Redirect to home page
   };
 
   return (
-    <div className="bg-primary-green shadow-md text-white sticky top-0 left-0 right-0 z-50">
+    <div className="bg-gradient-to-r from-green-200 to-green-500  shadow-md text-white sticky top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center">
           <img src="../../src/assets/a2-logo.png" alt="Logo" className="h-12 w-auto" onClick={handleHomeClick} />
@@ -203,15 +214,27 @@ const Header = ({ onSearch, onStoreChange }) => {
           />
         </div>
 
-        <div className="p-2">
-          <div className="flex justify-center space-x-4">
-            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleHomeClick}>
-              Home
-            </div>
-            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleProductClick}>All Products</div>
-            <div className="text-green-900 hover:text-white cursor-pointer font-semibold" onClick={handleAboutClick}>About</div>
-          </div>
-        </div>
+        <div className="flex justify-center space-x-4">
+  <div
+    className={`cursor-pointer font-semibold ${getActiveClass('/home')}`}
+    onClick={handleHomeClick}
+  >
+    Home
+  </div>
+  <div
+    className={`cursor-pointer font-semibold ${getActiveClass('/aizen/all-categories')}`}
+    onClick={handleProductClick}
+  >
+    All Products
+  </div>
+  <div
+    className={`cursor-pointer font-semibold ${getActiveClass('/about')}`}
+    onClick={handleAboutClick}
+  >
+    About
+  </div>
+</div>
+
 
         <div className="relative mx-4">
           <FaCartPlus className="text-2xl text-green-900 hover:text-white cursor-pointer" onClick={handleCartClick} />

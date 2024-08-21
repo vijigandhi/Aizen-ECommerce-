@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import Slider from 'react-slick';
 import { useInView } from 'react-intersection-observer';
 import Banner from './Banner';
@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import ProductCard from './ProductCard';
 import Header from '../Header';
 import Footer from '../Footer';
+import Cart from '../cart/cart';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -108,6 +109,10 @@ const HomePage = () => {
         <Banner images={images} />
       </div>
       <div className="container mx-auto p-4">
+      <Routes>
+            
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
         {/* Top Products Section */}
         <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <h2 className="text-2xl font-bold text-center mb-4">Top Products</h2>
