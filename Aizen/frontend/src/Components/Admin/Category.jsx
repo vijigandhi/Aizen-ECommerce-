@@ -7,10 +7,10 @@ const Category = () => {
     const [activeTab, setActiveTab] = useState('categorieslist');
   return (
     <div className="flex-1 min-h-full bg-white">
-        <div className='flex px-4 py-4 flex-col items-start'>
+        {/* <div className='flex px-4 py-4 flex-col items-start'>
           <h2 className="text-3xl font-bold text-center text-green-900">Content Management</h2>
           <p className="text-md font-bold text-center text-gray-800">Manage all Categories efficiently</p>
-        </div>
+        </div> */}
       <div className="top bg-white flex w-full border-b">
         <div
           onClick={() => setActiveTab('categorieslist')}
