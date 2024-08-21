@@ -24,6 +24,7 @@ const Checkout = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState('');
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -107,9 +108,11 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     setError('');
+    setLoading(true); // Set loading to true
 
     if (!formData.paymentMethod) {
       setError('Please select a payment method.');
+      setLoading(false); // Set loading to false
       return;
     }
 
@@ -166,6 +169,8 @@ const Checkout = () => {
     } catch (err) {
       console.error('Error placing order:', err);
       setError('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false); // Set loading to false
     }
   };
 
@@ -183,6 +188,11 @@ const Checkout = () => {
       <div className="min-h-screen bg-gray-100 py-10 px-2 sm:px-3 lg:px-4">
         <div className="max-w-7xl mx-auto flex gap-4">
           <div className="flex-1 bg-white shadow-md rounded-lg p-4">
+            {loading && (
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                <div className="text-white text-xl">Loading...</div>
+              </div>
+            )}
             {currentStep === 1 && (
               <div>
                 <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
@@ -298,60 +308,60 @@ const Checkout = () => {
               <div>
                 <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
                 <form>
-            <label className="block mb-2">Payment Method:</label>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cod"
-                  checked={formData.paymentMethod === 'cod'}
-                  onChange={handleChange}
-                  className="mr-2"
-                  required
-                />
-                Cash on Delivery
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="upi"
-                  checked={formData.paymentMethod === 'upi'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                UPI
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="credit_card"
-                  checked={formData.paymentMethod === 'credit_card'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Credit Card
-              </label>
-            </div>
+                  <label className="block mb-2">Payment Method:</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cod"
+                        checked={formData.paymentMethod === 'cod'}
+                        onChange={handleChange}
+                        className="mr-2"
+                        required
+                      />
+                      Cash on Delivery
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="upi"
+                        checked={formData.paymentMethod === 'upi'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      UPI
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="credit_card"
+                        checked={formData.paymentMethod === 'credit_card'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      Credit Card
+                    </label>
+                  </div>
         
-            {/* Conditional rendering to show future feature message */}
-            {(formData.paymentMethod === 'upi' || formData.paymentMethod === 'credit_card') && (
-              <p className="mt-2 text-red-600">This payment option currently not avaiable. Please choose cash on delivery</p>
-            )}
+                  {/* Conditional rendering to show future feature message */}
+                  {(formData.paymentMethod === 'upi' || formData.paymentMethod === 'credit_card') && (
+                    <p className="mt-2 text-red-600">This payment option currently not available. Please choose cash on delivery</p>
+                  )}
         
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={handlePlaceOrder}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-md"
-                disabled={formData.paymentMethod !== 'cod'}
-              >
-                Place Order
-              </button>
-            </div>
-          </form>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={handlePlaceOrder}
+                      className="w-full bg-green-600 text-white py-2 px-4 rounded-md"
+                      disabled={formData.paymentMethod !== 'cod'}
+                    >
+                      Place Order
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
           </div>

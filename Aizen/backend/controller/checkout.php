@@ -10,6 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 include "../model/Connection.php";
+require '../vendor/autoload.php'; // Load PHPMailer using Composer's autoload
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 // Enable detailed error reporting
 error_reporting(E_ALL);
@@ -145,6 +149,21 @@ class CheckoutController
                     $deleteCartItems = $this->db->prepare("DELETE FROM cart_item WHERE cart_id = (SELECT cart_id FROM cart WHERE user_id = ?)");
                     $deleteCartItems->execute([$userId]);
 
+                    // Retrieve user email
+                    $getUserEmail = $this->db->prepare("SELECT email FROM users WHERE id = :userId");
+                    $getUserEmail->execute(['userId' => $userId]);
+                    $user = $getUserEmail->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($user) {
+                        $userEmail = $user['email'];
+                        // Send confirmation email
+                        $this->sendConfirmationEmail($shippingName, $userEmail, $total, $orderId);
+                    } else {
+                        error_log('User not found: ' . $userId);
+                        echo json_encode(['status' => 'error', 'message' => 'User email not found.']);
+                        return;
+                    }
+
                     echo json_encode(['status' => 'success', 'message' => 'Order submitted successfully.']);
                 } else {
                     error_log('Failed to submit order: ' . implode(' ', $this->db->errorInfo()));
@@ -158,7 +177,86 @@ class CheckoutController
             echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
         }
     }
+
+    private function sendConfirmationEmail($userName, $userEmail, $total, $orderId)
+    {
+        $mail = new PHPMailer(true);
+
+        try {
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP host
+            $mail->SMTPAuth = true;
+            $mail->Username = 'aizendckap@gmail.com'; // Replace with your SMTP username
+            $mail->Password = 'nxwe euhq phcg zjsz'; // Replace with your SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+
+            //Recipients
+            $mail->setFrom('no-reply@example.com', 'Your Orders'); 
+            $mail->addAddress($userEmail); // Use the customer's email
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Order Confirmation';
+            $mail->Body = "
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        background-color: #f9f9f9;
+                    }
+                    h1 {
+                        color: #007BFF;
+                    }
+                    p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                    }
+                    .highlight {
+                        color: #007BFF;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 14px;
+                        color: #777;
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <h1>Order Confirmation</h1>
+                    <p>Dear <span class='highlight'>$userName</span>,</p>
+                    <p>Thank you for your order. Your order ID is <strong>$orderId</strong> and the total amount is <strong>\$$total</strong>.</p>
+                    <p>If you have any questions, feel free to contact us.</p>
+                    <div class='footer'>
+                        <p>Best regards,</p>
+                        <p>Aizen</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            ";
+            
+
+            $mail->send();
+            error_log('Confirmation email sent successfully.');
+        } catch (Exception $e) {
+            error_log("Error sending confirmation email: {$mail->ErrorInfo}");
+        }
+    }
 }
 
 $checkoutController = new CheckoutController();
 $checkoutController->handleCheckout();
+?>
