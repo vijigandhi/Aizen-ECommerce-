@@ -184,7 +184,7 @@ try {
                         <h2>Hi ' . htmlspecialchars($name) . ',</h2>
                         <p>Welcome! Your registration is completed.</p>
                         <img src="' . $imageUrl . '" alt="Welcome Image">
-                        <a href="http://localhost:3000/" class="button">Go to Aizen</a>
+                        <a href="http://localhost:3000/home" class="button">Go to Aizen</a>
                         <p>If you have any questions, feel free to <a href="mailto:aizendckap@gmail.com">contact us</a>.</p>
                     </div>
                     <div class="footer">
