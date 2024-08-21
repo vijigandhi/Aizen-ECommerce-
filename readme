@@ -1,5 +1,10 @@
 Home : npm install react-intersection-observer
 cart : npm install @fortawesome/react-fontawesome
 cart : npm install @fortawesome/free-solid-svg-icons
+Google-signup: npm install @react-oauth/google 
+              composer require league/oauth2-server
+              composer require league/oauth2-client
+              composer require google/apiclient
+              composer update google/apiclient
 
-ipodaiku avlo tha
+

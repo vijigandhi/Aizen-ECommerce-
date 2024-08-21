@@ -27,8 +27,8 @@ const Cart = () => {
           setUserId(userId);
           fetchCartItems(userId);
         } else {
-          setError(response.data.message);
-          // setError('Login      to view Your cart');
+          // setError(response.data.message);
+          setError('Login to add Your cart');
         }
       } catch (err) {
         console.error('Error fetching user details:', err.response?.data || err.message);

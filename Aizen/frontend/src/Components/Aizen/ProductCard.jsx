@@ -38,7 +38,7 @@ const ProductCard = ({ product }) => {
     }
 
     if (!customerId) {
-      toast.error('User not authenticated.');
+      toast.error('Please login to add items to your cart');
       return;
     }
 
