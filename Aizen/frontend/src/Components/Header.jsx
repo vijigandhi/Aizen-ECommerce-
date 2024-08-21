@@ -129,11 +129,11 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleAdminPanelClick = () => {
-    navigate('/aizen-admin/');
+    navigate('/aizen-admin/dashboard');
   };
 
   const handleSellerPortalClick = () => {
-    navigate('/aizen-seller/');
+    navigate('/aizen-seller/productmanagement');
   };
   const getActiveClass = (path) => {
     if (path === '/home') {
@@ -178,7 +178,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-green-200 to-green-500  shadow-md text-white sticky top-0 left-0 right-0 z-50">
+    <div className="bg-gradient-to-r from-green-300 to-green-500  shadow-md text-white sticky top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center">
           <img src="../../src/assets/a2-logo.png" alt="Logo" className="h-12 w-auto" onClick={handleHomeClick} />
