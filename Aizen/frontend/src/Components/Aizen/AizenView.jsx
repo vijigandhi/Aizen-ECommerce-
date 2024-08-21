@@ -42,11 +42,11 @@ const AizenView = () => {
           <Routes>
             <Route path="/" element={<ProductsList searchTerm={searchTerm} storeId={storeId} />} />
             <Route path="/aizen/*" element={<ProductsList searchTerm={searchTerm} storeId={storeId} />} />
-            <Route path="/all-categories" element={<ProductsList searchTerm={searchTerm} storeId={storeId} />} />
-            <Route path="/fresh-fruits" element={<FruitsList searchTerm={searchTerm} storeId={storeId} />} />
-            <Route path="/fresh-vegetables" element={<VegetablesList searchTerm={searchTerm} storeId={storeId} />} />
-            <Route path="/spices" element={<SpicesList searchTerm={searchTerm} storeId={storeId} />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/all-categories/*" element={<ProductsList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/fresh-fruits/*" element={<FruitsList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/fresh-vegetables/*" element={<VegetablesList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/spices/*" element={<SpicesList searchTerm={searchTerm} storeId={storeId} />} />
+          
           </Routes>
         </div>
       </div>

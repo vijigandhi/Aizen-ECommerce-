@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 import { toast } from 'react-toastify';
 
 const ProductCard = ({ product }) => {
@@ -58,6 +59,7 @@ const ProductCard = ({ product }) => {
 
       if (response.data.success) {
         toast.success('Added to cart successfully!');
+        
       } else {
         toast.error(`Error adding to cart: ${response.data.message}`);
       }

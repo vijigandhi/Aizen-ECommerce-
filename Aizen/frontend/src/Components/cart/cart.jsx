@@ -81,7 +81,7 @@ const Cart = () => {
   };
 
   const handleClose = () => {
-    navigate('/aizen');
+    navigate('/home');
     setIsOpen(false);
   };
 

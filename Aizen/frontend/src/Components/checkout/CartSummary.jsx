@@ -156,73 +156,75 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
 
   return (
     <div className="flex-1 bg-white shadow-md rounded-lg p-4 min-h-80 max-h-[calc(100vh-200px)]">
-      <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      {items.length > 0 ? (
-        <ul className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-          {items.map(item => (
-            <li key={item.cart_item_id} className="flex py-6 border-b border-gray-200">
-              <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                <img
-                  src={`http://localhost:8000/assets/images/${item.images}`}
-                  alt={item.name}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-
-              <div className="ml-4 flex flex-1 flex-col">
-                <div>
-                  <div className="flex justify-between text-base font-medium text-gray-900">
-                    <h3>
-                      <a href="#">{item.name}</a>
-                    </h3>
-                    <p className="ml-4">${item.selling_price}</p>
-                  </div>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {item.quantity} x ${item.selling_price}
-                  </p>
+    <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
+    {error && <p className="text-red-500">{error}</p>}
+    {items.length > 0 ? (
+      <ul className="space-y-6 max-h-[calc(100vh-300px)] overflow-y-auto custom-scrollbar">
+        {items.map(item => (
+          <li key={item.cart_item_id} className="flex py-6 border-b border-gray-200">
+            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+              <img
+                src={`http://localhost:8000/assets/images/${item.images}`}
+                alt={item.name}
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
+  
+            <div className="ml-4 flex flex-1 flex-col">
+              <div>
+                <div className="flex justify-between text-base font-medium text-gray-900">
+                  <h3>
+                    <a href="#">{item.name}</a>
+                  </h3>
+                  <p className="ml-4">${item.selling_price}</p>
                 </div>
-                <div className="flex flex-1 items-end justify-between text-sm">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleQuantityChange(item.cart_item_id, -1)}
-                      className="px-3 py-0.5 border border-gray-300 rounded-l-md text-green-600 hover:bg-green-200 text-xl font-semibold"
-                      disabled={item.quantity <= 0 || isUpdating}
-                    >
-                      -
-                    </button>
-                    <span className="px-3">{item.quantity}</span>
-                    <button
-                      onClick={() => handleQuantityChange(item.cart_item_id, 1)}
-                      className="px-3 py-0.5 border border-gray-300 rounded-r-md text-green-600 hover:bg-green-200 text-xl font-semibold"
-                      disabled={isUpdating}
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <div className="flex">
-                    <button
-                      type="button"
-                      className="font-medium text-red-600 hover:text-red-500"
-                      onClick={() => handleQuantityChange(item.cart_item_id, -item.quantity)}
-                      disabled={isUpdating}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  {item.quantity} x ${item.selling_price}
+                </p>
+              </div>
+              <div className="flex flex-1 items-end justify-between text-sm">
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handleQuantityChange(item.cart_item_id, -1)}
+                    className="px-3 py-0.5 border border-gray-300 rounded-l-md text-green-600 hover:bg-green-200 text-xl font-semibold"
+                    disabled={item.quantity <= 0 || isUpdating}
+                  >
+                    -
+                  </button>
+                  <span className="px-3">{item.quantity}</span>
+                  <button
+                    onClick={() => handleQuantityChange(item.cart_item_id, 1)}
+                    className="px-3 py-0.5 border border-gray-300 rounded-r-md text-green-600 hover:bg-green-200 text-xl font-semibold"
+                    disabled={isUpdating}
+                  >
+                    +
+                  </button>
+                </div>
+  
+                <div className="flex">
+                  <button
+                    type="button"
+                    className="font-medium text-red-600 hover:text-red-500"
+                    onClick={() => handleQuantityChange(item.cart_item_id, -item.quantity)}
+                    disabled={isUpdating}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center">No items in cart.</p>
-      )}
-      <div className="mt-2 font-semibold text-lg">
-        Total: ${calculateSubtotal()}
-      </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-center">No items in cart.</p>
+    )}
+    <div className="mt-2 font-semibold text-lg">
+      Total: ${calculateSubtotal()}
     </div>
+  </div>
+  
+
   );
 };
 
