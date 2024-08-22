@@ -87,6 +87,12 @@ const HomePage = () => {
       'Fruits': '/aizen/fresh-fruits',
       'Vegetables': '/aizen/fresh-vegetables',
       'Spices': '/aizen/spices',
+      'Dry Fruits': '/aizen/dryfruits',
+      'Meat, Fish & Eggs': '/aizen/meats',
+      'Dairy Products':'/aizen/dairyproducts',
+      'Atta & Rice': '/aizen/rice',
+      'Plant Sapplings': '/aizen/sapplings'
+      
     };
 
     const url = categoryUrlMap[categoryName] || '/aizen';

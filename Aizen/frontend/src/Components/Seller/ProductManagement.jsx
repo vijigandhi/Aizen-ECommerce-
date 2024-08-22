@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import ProductForm from './ProductForm'; // Ensure this component exists and is correctly implemented
+import { useNavigate } from 'react-router-dom';
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -12,20 +13,55 @@ const ProductManagement = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(5); // Default entries per page
+  const [loading, setLoading] = useState(true); // Loading state
+  const [userId, setUserId] = useState(null); // State to store user ID
+  const [isAdmin, setIsAdmin] = useState(false); // State to check if user is an admin
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/controller/Admin/getAllProducts.php');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+    const checkAdminAccess = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:8000/controller/Admin/getUserDetails.php', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.data.user.role_id === 1 || response.data.user.role_id === 2 ) {
+            setIsAdmin(true);
+            setUserId(response.data.user.id); // Store user ID
+          } else {
+            navigate('/access-denied');
+          }
+        } catch (error) {
+          console.error('Error verifying admin role:', error);
+          navigate('/access-denied');
+        }
+      } else {
+        navigate('/access-denied');
       }
     };
 
-    fetchProducts();
-  }, []);
+    checkAdminAccess();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchProducts = async () => {
+        try {
+          const response = await axios.get('http://localhost:8000/controller/Admin/Seller/getSellerProducts.php', {
+            params: { user_id: userId }
+          });
+          setProducts(response.data.products || []);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProducts();
+    }
+  }, [userId]);
 
   const handleViewClick = (product) => {
     setSelectedProduct(product);
@@ -122,48 +158,60 @@ const ProductManagement = () => {
           <label htmlFor="entries" className="ml-2 text-gray-700">entries</label>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full  border border-gray-200 rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
-            <tr>
-              <th
-                className="py-3 px-6 text-left cursor-pointer"
-                onClick={() => handleSort('id')}
-              >
-                Product ID {getSortIcon('id')}
-              </th>
-              <th
-                className="py-3 px-6 text-left cursor-pointer"
-                onClick={() => handleSort('name')}
-              >
-                Name {getSortIcon('name')}
-              </th>
-              <th className="py-3 px-6 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
-            {currentProducts.map((product) => (
-              <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
-                <td className="py-3 px-6">{product.id}</td>
-                <td className="py-3 px-6">{product.name}</td>
-                <td className="py-3 px-6 text-center flex justify-center space-x-4">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => handleViewClick(product)}
-                  >
-                    <FaEye />
-                  </button>
-                  <button
-                    className="text-green-500 hover:text-green-700"
-                  >
-                    <FaEdit />
-                  </button>
-                </td>
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
+              <tr>
+                <th
+                  className="py-3 px-6 text-left cursor-pointer"
+                  onClick={() => handleSort('id')}
+                >
+                  Product ID {getSortIcon('id')}
+                </th>
+                <th
+                  className="py-3 px-6 text-left cursor-pointer"
+                  onClick={() => handleSort('name')}
+                >
+                  Name {getSortIcon('name')}
+                </th>
+                <th className="py-3 px-6 text-center">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
+              {currentProducts.length > 0 ? (
+                currentProducts.map((product) => (
+                  <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
+                    <td className="py-3 px-6">{product.id}</td>
+                    <td className="py-3 px-6">{product.name}</td>
+                    <td className="py-3 px-6 text-center flex justify-center space-x-4">
+                      <button
+                        className="text-blue-500 hover:text-blue-700"
+                        onClick={() => handleViewClick(product)}
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        className="text-green-500 hover:text-green-700"
+                      >
+                        <FaEdit />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center py-3">No products found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="flex justify-between items-center mt-4">
         <div>
@@ -174,7 +222,7 @@ const ProductManagement = () => {
             <button
               key={number}
               onClick={() => paginate(number)}
-              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
+              className={`py-1 px-3 rounded ${currentPage === number ? 'bg-green-900 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-700 hover:text-white`}
             >
               {number}
             </button>
@@ -182,33 +230,20 @@ const ProductManagement = () => {
         </div>
       </div>
 
+      {showProductForm && <ProductForm onClose={toggleProductForm} />}
       {selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h3 className="text-lg font-bold mb-4">Product Detail</h3>
-            <p>
-              <strong>Product ID:</strong> {selectedProduct.id}
-            </p>
-            <p>
-              <strong>Name:</strong> {selectedProduct.name}
-            </p>
-            <p>
-              <strong>Description:</strong> {selectedProduct.short_description}
-            </p>
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
+            <p><strong>ID:</strong> {selectedProduct.id}</p>
+            <p><strong>Name:</strong> {selectedProduct.name}</p>
+            <p><strong>Description:</strong> {selectedProduct.short_description}</p>
             <button
-              className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
               onClick={handleCloseModal}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
             >
               Close
             </button>
-          </div>
-        </div>
-      )}
-
-      {showProductForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <ProductForm onClose={toggleProductForm} />
           </div>
         </div>
       )}
@@ -217,3 +252,4 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
+
