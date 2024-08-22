@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import StoreForm from './StoreForm';
 
-const Stores = () => {
+const Stores = (onClose) => {
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [selectedStore, setSelectedStore] = useState(null);
   const [showStoreForm, setShowStoreForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [storesPerPage, setStoresPerPage] = useState(5); // Default entries per page
+  const [storesPerPage, setStoresPerPage] = useState(5);
+  const [editingStore, setEditingStore] = useState(null);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -27,30 +28,68 @@ const Stores = () => {
     fetchStores();
   }, []);
 
-  const handleToggleActive = async (storeId) => {
-    try {
-      const store = stores.find(store => store.id === storeId);
-      const updatedActiveStatus = store.is_active === 1 ? 0 : 1;
+  const handleEditClick = (store) => {
+    setEditingStore({ ...store });
+  };
 
-      const response = await axios.post('http://localhost:8000/controller/Admin/Store/updateStoreStatus.php', {
-        store_id: storeId,
-        is_active: updatedActiveStatus
+  const handleCancelEdit = () => {
+    setEditingStore(null);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/controller/Admin/manageStores.php', {
+        store_id: editingStore.id,
+        is_active: editingStore.is_active,
+        is_popular: editingStore.is_popular
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (response.data.status === 'success') {
+      if (response.data.success) {
         setStores(prevStores =>
-          prevStores.map(store =>
-            store.id === storeId
-              ? { ...store, is_active: updatedActiveStatus }
-              : store
+          prevStores.map(st => 
+            st.id === editingStore.id ? editingStore : st
           )
         );
+        setEditingStore(null);
       } else {
-        console.error('Failed to update store status:', response.data.message);
+        console.error('Failed to update store:', response.data.message);
       }
     } catch (error) {
-      console.error('Error updating store status:', error);
+      console.error('Error updating store:', error);
     }
+  };
+
+  const handleDeleteStore = () => {
+    if (window.confirm('Are you sure you want to delete this store?')) {
+      fetch(`http://localhost:8000/controller/Admin/deleteStore.php?id=${editingStore.id}`, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          removeStoreFromList(editingStore.id);
+          setEditingStore(null);
+        } else {
+          console.error('Failed to delete store:', data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  };
+
+  const removeStoreFromList = (id) => {
+    setStores(stores.filter(store => store.id !== id));
+  };
+
+  const handleToggleChange = (field) => {
+    setEditingStore(prevStore => ({
+      ...prevStore,
+      [field]: prevStore[field] === '1' ? '0' : '1'
+    }));
   };
 
   const handleViewClick = (store) => {
@@ -95,7 +134,7 @@ const Stores = () => {
 
   const handleStoresPerPageChange = (event) => {
     setStoresPerPage(Number(event.target.value));
-    setCurrentPage(1); // Reset to first page when entries per page change
+    setCurrentPage(1);
   };
 
   const pageNumbers = [];
@@ -103,15 +142,8 @@ const Stores = () => {
     pageNumbers.push(i);
   }
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
-    }
-    return null;
-  };
-
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
+    <div className="p-6 min-h-screen bg-white">
       <div className="flex justify-between items-center mb-8">
         <div className='flex flex-col items-start'>
           <h2 className="text-3xl font-bold text-center text-green-900">Store Management</h2>
@@ -149,69 +181,38 @@ const Stores = () => {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <table className="min-w-full bg-white border  rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
-            <th
-                className="py-3 px-6  text-left cursor-pointer"
+              <th
+                className="py-3 px-6 text-left cursor-pointer"
                 onClick={() => handleSort('id')}
               >
-                Store ID 
+                Store ID
               </th>
               <th
-                className="py-3 px-6  text-left cursor-pointer"
+                className="py-3 px-6 text-left cursor-pointer"
                 onClick={() => handleSort('name')}
               >
-                Name 
-              </th>
-              <th
-                className="py-3 px-6 text-center cursor-pointer"
-                onClick={() => handleSort('is_active')}
-              >
-                Active
+                Name
               </th>
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
+          <tbody className="text-gray-700 text-sm border-0 h-45 max-h-45 overflow-y-auto">
             {currentStores.map((store) => (
-              <tr key={store.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
+              <tr key={store.id} className="border-b border-r-0 border-gray-200 h-8 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{store.id}</td>
-                <td className="py-3 px-6">{store.name}</td>
+                <td className="py-3 border-l-0 border-r-0 px-6">{store.name}</td>
                 <td className="py-3 px-6 text-center">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={store.is_active === 1}
-                      onChange={() => handleToggleActive(store.id)}
-                      className="sr-only"
-                    />
-                    <div className="block bg-gray-300 w-11 h-6 rounded-full"></div>
-                    <div
-                      className={`absolute ${store.is_active === 1 ? 'bg-green-500' : 'bg-gray-400'} w-5 h-5 rounded-full transform transition-transform duration-300 ease-in-out`}
-                      style={{ transform: store.is_active === 1 ? 'translateX(5px)' : 'translateX(0)' }}
-                    ></div>
-                  </label>
-                </td>
-                <td className="py-3 px-6 text-center flex justify-center space-x-4">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => handleViewClick(store)}
-                  >
-                    <FaEye />
-                  </button>
-                  <button
-                    className="text-green-500 hover:text-green-700"
-                  >
-                    <FaEdit />
-                  </button>
+                  <FaEye className="inline-block cursor-pointer text-green-600" onClick={() => handleViewClick(store)} />
+                  <FaEdit className="inline-block cursor-pointer text-blue-600 ml-2" onClick={() => handleEditClick(store)} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
       <div className="flex justify-between items-center mt-4">
         <div>
           Showing {indexOfFirstStore + 1} to {indexOfLastStore > filteredStores.length ? filteredStores.length : indexOfLastStore} of {filteredStores.length} entries
@@ -228,42 +229,72 @@ const Stores = () => {
           ))}
         </div>
       </div>
-
-      {selectedStore && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h3 className="text-lg font-bold mb-4">Store Detail</h3>
-            <p>
-              <strong>Store ID:</strong> {selectedStore.id}
-            </p>
-            <p>
-              <strong>Name:</strong> {selectedStore.name}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedStore.is_active === 1 ? 'Active' : 'Inactive'}
-            </p>
-            <button
-              className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-{showStoreForm && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      {/* Your StoreForm content here */}
-      <StoreForm onClose={toggleStoreForm} />
-    </div>
-  </div>
-)}
-
+      {showStoreForm && 
+       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+         <div className="bg-white p-8 rounded-lg shadow-lg">
+         <StoreForm onClose={toggleStoreForm} />
+         </div>
+       </div>
+      }
+      {selectedStore &&
+       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+         <div className="bg-white p-8 rounded-lg shadow-lg">
+           <h2 className="text-xl font-bold mb-4">Store Details</h2>
+           <p><strong>ID:</strong> {selectedStore.id}</p>
+           <p><strong>Name:</strong> {selectedStore.name}</p>
+           <p><strong>Status:</strong> {selectedStore.is_active ? 'Active' : 'Inactive'}</p>
+           <p><strong>Popularity:</strong> {selectedStore.is_popular ? 'Popular' : 'Not Popular'}</p>
+           <button onClick={handleCloseModal} className="mt-4 bg-red-500 text-white py-2 px-4 rounded">Close</button>
+         </div>
+       </div>
+      }
+      {editingStore &&
+       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+         <div className="bg-white p-8 rounded-lg shadow-lg">
+           <h2 className="text-xl font-bold mb-4">Edit Store</h2>
+           <div className="mb-4">
+             <label className="block text-gray-700">Status</label>
+             <button
+               onClick={() => handleToggleChange('is_active')}
+               className={`px-4 py-2 rounded ${editingStore.is_active === '1' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+             >
+               {editingStore.is_active === '1' ? 'Active' : 'Inactive'}
+             </button>
+           </div>
+           <div className="mb-4">
+             <label className="block text-gray-700">Popularity</label>
+             <button
+               onClick={() => handleToggleChange('is_popular')}
+               className={`px-4 py-2 rounded ${editingStore.is_popular === '1' ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+             >
+               {editingStore.is_popular === '1' ? 'Popular' : 'Not Popular'}
+             </button>
+           </div>
+           <button
+             onClick={handleSaveEdit}
+             className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
+           >
+             Save
+           </button>
+           <button
+             onClick={handleCancelEdit}
+             className="bg-gray-500 text-white py-2 px-4 rounded"
+           >
+             Cancel
+           </button>
+           <button
+             onClick={handleDeleteStore}
+             className="bg-red-500 text-white py-2 px-4 rounded mt-4"
+           >
+             Delete
+           </button>
+         </div>
+       </div>
+      }
     </div>
   );
 };
 
 export default Stores;
+
 

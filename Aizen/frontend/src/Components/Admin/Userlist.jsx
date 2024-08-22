@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const Userlist = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [usersPerPage, setUsersPerPage] = useState(5);
 
   useEffect(() => {
@@ -28,6 +29,12 @@ const Userlist = () => {
       direction = 'descending';
     }
     setSortConfig({ key, direction });
+  };
+  const handleViewClick = (user) => {
+    setSelectedUser(user.id);
+  };
+  const handleCloseModal = () => {
+    setSelectedUser(null);
   };
 
   const sortedUsers = [...users].sort((a, b) => {
@@ -126,11 +133,11 @@ const Userlist = () => {
                 <td className="py-3 px-6">{user.name}</td>
                 <td className="py-3 px-6">{user.email}</td>
                 <td className="py-3 px-6 text-center">
-                  <button
-                    onClick={() => console.log(`View user with ID: ${user.id}`)}
-                    className="text-indigo-600 hover:text-indigo-900"
+                <button
+                    className="text-blue-500 hover:text-blue-700"
+                    onClick={() => handleViewClick(user)}
                   >
-                    View
+                    <FaEye />
                   </button>
                 </td>
               </tr>
@@ -155,6 +162,37 @@ const Userlist = () => {
           ))}
         </div>
       </div>
+      
+      
+      {selectedUser && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+        <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">User Details</h2>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>ID:</strong> {selectedUser.id}
+            </p>
+          </div>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>Name:</strong> {selectedUser.name}
+            </p>
+          </div>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>Status:</strong> {selectedUser.role_id === '3' ? 'User' : 'User'}
+            </p>
+          </div>
+         
+          <button
+            onClick={handleCloseModal}
+            className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+      )}
     </div>
   );
 }

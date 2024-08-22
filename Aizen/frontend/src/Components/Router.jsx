@@ -19,6 +19,7 @@ import CartItem from "./cart/cartitem";
 import Homepage from "./Aizen/Home";
 
 import ViewCart from "./cart/viewcart";
+import AboutUs from "./AboutUs";
 
 const RouterComponent = () => {
   return (
@@ -28,7 +29,7 @@ const RouterComponent = () => {
         <Routes>
         <Route path="/home/*" element={<Homepage />} />
         <Route path="/*" element={<Homepage />} />
-        <Route path="/about" element={<Homepage />} />
+        <Route path="/about" element={<AboutUs />} />
           <Route path="/aizen/*" element={<AizenView />} />
           <Route path ="/product/:id" element={<ProduceDetailPage/>}/>
           <Route path="/aizen-admin/*" element={<AdminView />} />
