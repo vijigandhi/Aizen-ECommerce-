@@ -198,7 +198,7 @@ const HomePage = () => {
         </section>
 
         {/* Products Section */}
-        <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
+        {/* <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <h2 className="text-2xl font-bold text-center mb-4">Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {visibleProducts.map((product) => (
@@ -212,7 +212,38 @@ const HomePage = () => {
               Loading more products...
             </div>
           )}
-        </section>  
+        </section>   */}
+  <section className="px-4 lg:px-16 shadow-none"> {/* Increased padding for larger screens */}
+  <h2 className="text-3xl font-semibold text-gray-800 text-center mb-10">Meet Our Team</h2>
+  <div className="flex flex-wrap gap-6 justify-center">
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="/path/to/team-member1.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Vignesh C</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/portfolio.jpg" alt="Aki" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Akilashwarran Prabaharan</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="/path/to/team-member3.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Bharath Raj</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="/path/to/team-member4.jpg" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Asha K</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="/path/to/team-member5.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Vijayalakshmi Gandhi</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+  </div>
+</section>
+
       </div>
       <Footer />
     </div>

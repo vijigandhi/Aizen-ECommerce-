@@ -133,7 +133,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleSellerPortalClick = () => {
-    navigate('/aizen-seller/productmanagement');
+    navigate('/aizen-seller/dashboard');
   };
   const getActiveClass = (path) => {
     if (path === '/home') {
