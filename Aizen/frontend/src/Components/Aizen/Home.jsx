@@ -213,11 +213,14 @@ const HomePage = () => {
             </div>
           )}
         </section>   */}
-  <section className="px-4 lg:px-16 shadow-none"> {/* Increased padding for larger screens */}
+
+
+      </div>
+      <section className="w-full bg-gray-100 lg:px-16 m-0 shadow-none"> {/* Increased padding for larger screens */}
   <h2 className="text-3xl font-semibold text-gray-800 text-center mb-10">Meet Our Team</h2>
   <div className="flex flex-wrap gap-6 justify-center">
     <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="/path/to/team-member1.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <img src="../../src/assets/Vignesh Chandran.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
       <h3 className="text-2xl font-semibold text-gray-800">Vignesh C</h3>
       <p className="text-gray-600">Full-Stack Developer</p>
     </div>
@@ -227,24 +230,22 @@ const HomePage = () => {
       <p className="text-gray-600">Full-Stack Developer</p>
     </div>
     <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="/path/to/team-member3.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <img src="../../src/assets/Bharath Raj K.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
       <h3 className="text-2xl font-semibold text-gray-800">Bharath Raj</h3>
       <p className="text-gray-600">Full-Stack Developer</p>
     </div>
     <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="/path/to/team-member4.jpg" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <img src="../../src/assets/Asha Kambarajan.png" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
       <h3 className="text-2xl font-semibold text-gray-800">Asha K</h3>
       <p className="text-gray-600">Full-Stack Developer</p>
     </div>
-    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="/path/to/team-member5.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+    <div className="w-full  max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/Vijayalakshmi Gandhi.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
       <h3 className="text-2xl font-semibold text-gray-800">Vijayalakshmi Gandhi</h3>
       <p className="text-gray-600">Full-Stack Developer</p>
     </div>
   </div>
 </section>
-
-      </div>
       <Footer />
     </div>
   );
