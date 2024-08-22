@@ -94,14 +94,15 @@ let Modal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative">
+    <div className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 ${loading ? 'pointer-events-none' : ''}`}>
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative"> 
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 px-1 py-0.5 text-red-500 hover:bg-gray-100 text-xl font-semibold"
+          className={`absolute top-2 right-2 px-1 py-0.5 text-red-500 hover:bg-gray-100 text-xl font-semibold ${loading ? 'cursor-not-allowed' : ''}`}
           aria-label="Close"
-        >
-          X
+          disabled={loading} // Optionally disable the button if loading
+          >
+            X
         </button>
         <h2 className="text-xl font-semibold mb-4">Vendor Information</h2>
         <p className="mb-1">Are you interested in promoting the vendor? <span className="text-red-500">*</span></p>
@@ -113,19 +114,38 @@ let Modal = ({ isOpen, onClose }) => {
           placeholder="Enter your request details here..."
         />
         <div className="mb-5 h-2"> {/* Fixed height for error message container */}
-          {error && <p className="text-red-500 text-2" >{error}</p>} {/* Display error message if any */}
+          {error && <p className="text-red-500 text-2">{error}</p>} {/* Display error message if any */}
         </div>
-        <div className="flex justify-between">
+        <div className="flex items-center justify-between">
           <button
             onClick={handleSubmit}
             disabled={loading} // Disable button while loading
-            className={`px-2 py-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-green'} text-white rounded-md hover:bg-green-900`}
+            className={`px-2 py-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-green'} text-white rounded-md flex items-center`}
           >
+            {loading && (
+              <div className="w-4 h-4 border-2 border-t-2 border-white border-opacity-50 rounded-full mr-2 spinner"></div>
+            )}
             {loading ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </div>
       <ToastContainer />
+      <style jsx>{`
+        /* Spinner styles */
+        .spinner {
+          border: 2px solid #f3f3f3; /* Light grey */
+          border-top: 2px solid #3498db; /* Blue */
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          animation: spin-fast 0.5s linear infinite; /* Faster spin */
+        }
+
+        @keyframes spin-fast {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
