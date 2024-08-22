@@ -12,7 +12,7 @@ const Navbar = ({ selectedMenuTitle }) => {
   };
 
   const handleToSiteClick = () => {
-    navigate('/aizen');
+    navigate('/aizen/all-categories');
     setIsDropdownOpen(false);
   };
 

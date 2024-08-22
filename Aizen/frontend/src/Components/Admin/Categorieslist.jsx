@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import CategoryForm from './CategoryForm';
 
@@ -12,6 +12,7 @@ const CategoriesList = () => {
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [categoriesPerPage, setCategoriesPerPage] = useState(5);
+  const [editingCategory, setEditingCategory] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -27,44 +28,20 @@ const CategoriesList = () => {
     fetchCategories();
   }, []);
 
-  const handleToggleActive = async (categoryId) => {
-    try {
-      const category = categories.find(cat => cat.id === categoryId);
-      const updatedActiveStatus = category.is_active === '1' ? '0' : '1';
-
-      const response = await axios.post('http://localhost:8000/controller/Admin/UpdateCategoryStatus.php', {
-        category_id: categoryId,
-        is_active: updatedActiveStatus
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.data.success) {
-        setCategories(prevCategories =>
-          prevCategories.map(cat =>
-            cat.id === categoryId
-              ? { ...cat, is_active: updatedActiveStatus }
-              : cat
-          )
-        );
-      } else {
-        console.error('Failed to update category status:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error updating category status:', error);
-    }
+  const handleEditClick = (category) => {
+    setEditingCategory({ ...category });
   };
 
-  const handleTogglePopular = async (categoryId) => {
-    try {
-      const category = categories.find(cat => cat.id === categoryId);
-      const updatedPopularStatus = category.is_popular === '1' ? '0' : '1';
+  const handleCancelEdit = () => {
+    setEditingCategory(null);
+  };
 
-      const response = await axios.post('http://localhost:8000/controller/Admin/UpdateCategoryStatus.php', {
-        category_id: categoryId,
-        is_popular: updatedPopularStatus
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/controller/Admin/managecategories.php', {
+        category_id: editingCategory.id,
+        is_active: editingCategory.is_active,
+        is_popular: editingCategory.is_popular
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -74,17 +51,50 @@ const CategoriesList = () => {
       if (response.data.success) {
         setCategories(prevCategories =>
           prevCategories.map(cat =>
-            cat.id === categoryId
-              ? { ...cat, is_popular: updatedPopularStatus }
-              : cat
+            cat.id === editingCategory.id ? editingCategory : cat
           )
         );
+        setEditingCategory(null);
       } else {
-        console.error('Failed to update category popularity:', response.data.message);
+        console.error('Failed to update category:', response.data.message);
       }
     } catch (error) {
-      console.error('Error updating category popularity:', error);
+      console.error('Error updating category:', error);
     }
+  };
+  const handleDeleteCategory = () => {
+    // Confirmation before deleting
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      // Assuming you have an API endpoint to delete the category
+      fetch(`http://localhost:8000/controller/Admin/deleteCategories.php?id=${editingCategory.id}`, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Handle successful deletion (e.g., remove the category from the list)
+          removeCategoryFromList(editingCategory.id);
+          setEditingCategory(null); // Close the modal after deletion
+        } else {
+          // Handle error
+          console.error('Failed to delete category:', data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  };
+  
+  // Example of removing the category from the list after deletion
+  const removeCategoryFromList = (id) => {
+    setCategories(categories.filter(category => category.id !== id));
+  };
+  
+
+  const handleToggleChange = (field) => {
+    setEditingCategory(prevCategory => ({
+      ...prevCategory,
+      [field]: prevCategory[field] === '1' ? '0' : '1'
+    }));
   };
 
   const handleViewClick = (category) => {
@@ -137,15 +147,8 @@ const CategoriesList = () => {
     pageNumbers.push(i);
   }
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
-    }
-    return null;
-  };
-
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
+    <div className="p-6 min-h-screen bg-white">
       <div className="flex justify-between items-center mb-8">
         <div className='flex flex-col items-start'>
           <h2 className="text-3xl font-bold text-center text-green-900">Category Management</h2>
@@ -183,89 +186,53 @@ const CategoriesList = () => {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <table className="min-w-full bg-white border  rounded-lg shadow-md">
           <thead className="bg-gray-200 text-gray-800 uppercase text-sm">
             <tr>
               <th
                 className="py-3 px-6 text-left cursor-pointer"
                 onClick={() => handleSort('id')}
               >
-                Category ID {getSortIcon('id')}
+                Category ID
               </th>
               <th
                 className="py-3 px-6 text-left cursor-pointer"
                 onClick={() => handleSort('name')}
               >
-                Name {getSortIcon('name')}
-              </th>
-              <th
-                className="py-3 px-6 text-center cursor-pointer"
-                onClick={() => handleSort('is_active')}
-              >
-                Active {getSortIcon('is_active')}
-              </th>
-              <th
-                className="py-3 px-6 text-center cursor-pointer"
-                onClick={() => handleSort('is_popular')}
-              >
-                Popular {getSortIcon('is_popular')}
+                Name
               </th>
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
+          <tbody className="text-gray-700 text-sm border-0 h-45 max-h-45 overflow-y-auto">
             {currentCategories.map((category) => (
-              <tr key={category.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
-                <td className="py-3 px-6">{category.id}</td>
-                <td className="py-3 px-6">{category.name}</td>
-                <td className="py-3 px-6 text-center">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={category.is_active === '1'}
-                      onChange={() => handleToggleActive(category.id)}
-                      className="sr-only"
-                    />
-                    <div className="w-11 h-6 bg-gray-300 rounded-full"></div>
-                    <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition transform"></span>
-                  </label>
-                </td>
-                <td className="py-3 px-6 text-center">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={category.is_popular === '1'}
-                      onChange={() => handleTogglePopular(category.id)}
-                      className="sr-only"
-                    />
-                    <div className="w-11 h-6 bg-gray-300 rounded-full"></div>
-                    <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition transform"></span>
-                  </label>
-                </td>
+              <tr key={category.id} className="border-b border-r-0 border-gray-200 h-8 hover:bg-gray-100 transition duration-300">
+                <td className="py-3  px-6">{category.id}</td>
+                <td className="py-3 border-l-0 border-r-0 px-6">{category.name}</td>
                 <td className="py-3 px-6 text-center">
                   <FaEye className="inline-block cursor-pointer text-green-600" onClick={() => handleViewClick(category)} />
-                  <FaEdit className="inline-block cursor-pointer text-blue-600 ml-2" onClick={() => handleViewClick(category)} />
+                  <FaEdit className="inline-block cursor-pointer text-blue-600 ml-2" onClick={() => handleEditClick(category)} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="mt-4">
-        <nav className="flex justify-center">
-          <ul className="flex space-x-2">
-            {pageNumbers.map(number => (
-              <li key={number}>
-                <button
-                  onClick={() => paginate(number)}
-                  className={`py-2 px-4 border rounded ${currentPage === number ? 'bg-green-900 text-white' : 'bg-white text-green-900'}`}
-                >
-                  {number}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          Showing {indexOfFirstCategory + 1} to {indexOfLastCategory > filteredCategories.length ? filteredCategories.length : indexOfLastCategory} of {filteredCategories.length} entries
+        </div>
+        <div className="flex space-x-1">
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
+            >
+              {number}
+            </button>
+          ))}
+        </div>
       </div>
       {showCategoryForm && 
        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -275,16 +242,96 @@ const CategoriesList = () => {
        </div>
      </div>}
       {selectedCategory && (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+      <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Category Details</h2>
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">
+            <strong>ID:</strong> {selectedCategory.id}
+          </p>
+        </div>
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">
+            <strong>Name:</strong> {selectedCategory.name}
+          </p>
+        </div>
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">
+            <strong>Status:</strong> {selectedCategory.is_active === '1' ? 'Active' : 'Inactive'}
+          </p>
+        </div>
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">
+            <strong>Popularity:</strong> {selectedCategory.is_popular === '1' ? 'Popular' : 'Not Popular'}
+          </p>
+        </div>
+        <button
+          onClick={handleCloseModal}
+          className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+    
+      )}
+      {editingCategory && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Category Details</h2>
-            <p><strong>ID:</strong> {selectedCategory.id}</p>
-            <p><strong>Name:</strong> {selectedCategory.name}</p>
-            <p><strong>Status:</strong> {selectedCategory.is_active === '1' ? 'Active' : 'Inactive'}</p>
-            <p><strong>Popularity:</strong> {selectedCategory.is_popular === '1' ? 'Popular' : 'Not Popular'}</p>
-            <button onClick={handleCloseModal} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Close</button>
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Category</h2>
+          
+          <div className="flex items-center justify-between mb-6">
+            <label className="text-gray-700 font-medium">Active Status:</label>
+            <button
+              onClick={() => handleToggleChange('is_active')}
+              className={`py-2 px-6 rounded-full transition-all duration-300 ${
+                editingCategory.is_active === '1' 
+                  ? 'bg-green-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {editingCategory.is_active === '1' ? 'On' : 'Off'}
+            </button>
+          </div>
+      
+          <div className="flex items-center justify-between mb-6">
+            <label className="text-gray-700 font-medium">Popular Status:</label>
+            <button
+              onClick={() => handleToggleChange('is_popular')}
+              className={`py-2 px-6 rounded-full transition-all duration-300 ${
+                editingCategory.is_popular === '1' 
+                  ? 'bg-green-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {editingCategory.is_popular === '1' ? 'On' : 'Off'}
+            </button>
+          </div>
+      
+          <div className="flex justify-between space-x-4 mt-8">
+            <button
+              onClick={handleCancelEdit}
+              className="bg-gray-400 hover:bg-gray-500 text-white font-bold px-5 py-2 rounded-lg transition-all duration-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-2 rounded-lg transition-all duration-300"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleDeleteCategory}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-lg transition-all duration-300"
+            >
+              Delete
+            </button>
           </div>
         </div>
+      </div>
+      
+      
       )}
     </div>
   );
