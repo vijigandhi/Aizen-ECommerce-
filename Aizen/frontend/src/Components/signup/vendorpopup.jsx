@@ -119,7 +119,7 @@ let Modal = ({ isOpen, onClose }) => {
           <button
             onClick={handleSubmit}
             disabled={loading} // Disable button while loading
-            className={`px-2 py-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500'} text-white rounded-md hover:bg-green-600`}
+            className={`px-2 py-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-green'} text-white rounded-md hover:bg-green-900`}
           >
             {loading ? 'Submitting...' : 'Submit'}
           </button>

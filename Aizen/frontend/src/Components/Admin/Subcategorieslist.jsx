@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
-import SubCategoryForm from './SubCategoryForm'; // Ensure you have this component
+import SubCategoryForm from './SubCategoryForm';
 
 const SubcategoriesList = () => {
   const [subcategories, setSubcategories] = useState([]);
@@ -11,7 +11,8 @@ const SubcategoriesList = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [showSubCategoryForm, setShowSubCategoryForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [subcategoriesPerPage, setSubcategoriesPerPage] = useState(5); // Default entries per page
+  const [subcategoriesPerPage, setSubcategoriesPerPage] = useState(5);
+  const [editingSubcategory, setEditingSubcategory] = useState(null);
 
   useEffect(() => {
     const fetchSubcategories = async () => {
@@ -26,6 +27,71 @@ const SubcategoriesList = () => {
 
     fetchSubcategories();
   }, []);
+
+  const handleEditClick = (subcategory) => {
+    setEditingSubcategory({ ...subcategory });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSubcategory(null);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/controller/Admin/manageSubcategories.php', {
+        subcategory_id: editingSubcategory.id,
+        is_active: editingSubcategory.is_active,
+        is_popular: editingSubcategory.is_popular
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+
+        }
+      });
+
+      if (response.data.success) {
+        setSubcategories(prevSubcategories =>
+          prevSubcategories.map(sub =>
+            sub.id === editingSubcategory.id ? editingSubcategory : sub
+          )
+        );
+        setEditingSubcategory(null);
+      } else {
+        console.error('Failed to update subcategory:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error updating subcategory:', error);
+    }
+  };
+
+  const handleDeleteSubcategory = () => {
+    if (window.confirm('Are you sure you want to delete this subcategory?')) {
+      fetch(`http://localhost:8000/controller/Admin/manageSubCategories.php?id=${editingSubcategory.id}`, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          removeSubcategoryFromList(editingSubcategory.id);
+          setEditingSubcategory(null);
+        } else {
+          console.error('Failed to delete subcategory:', data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  };
+  
+  const removeSubcategoryFromList = (id) => {
+    setSubcategories(subcategories.filter(subcategory => subcategory.id !== id));
+  };
+
+  const handleToggleChange = (field) => {
+    setEditingSubcategory(prevSubcategory => ({
+      ...prevSubcategory,
+      [field]: prevSubcategory[field] === '1' ? '0' : '1'
+    }));
+  };
 
   const handleViewClick = (subcategory) => {
     setSelectedSubcategory(subcategory);
@@ -69,7 +135,7 @@ const SubcategoriesList = () => {
 
   const handleSubcategoriesPerPageChange = (event) => {
     setSubcategoriesPerPage(Number(event.target.value));
-    setCurrentPage(1); // Reset to first page when entries per page change
+    setCurrentPage(1);
   };
 
   const pageNumbers = [];
@@ -155,6 +221,7 @@ const SubcategoriesList = () => {
                   </button>
                   <button
                     className="text-green-500 hover:text-green-700"
+                    onClick={() => handleEditClick(subcategory)}
                   >
                     <FaEdit />
                   </button>
@@ -169,44 +236,115 @@ const SubcategoriesList = () => {
         <div>
           Showing {indexOfFirstSubcategory + 1} to {indexOfLastSubcategory > filteredSubcategories.length ? filteredSubcategories.length : indexOfLastSubcategory} of {filteredSubcategories.length} entries
         </div>
-        <div className="flex space-x-1">
-          {pageNumbers.map(number => (
-            <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
-            >
-              {number}
-            </button>
-          ))}
+        <div>
+          <ul className="flex space-x-2">
+            {pageNumbers.map(number => (
+              <li key={number}>
+                <button
+                  onClick={() => paginate(number)}
+                  className={`px-4 py-2 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-200 text-gray-700'}`}
+                >
+                  {number}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
+      {showSubCategoryForm && <SubCategoryForm onClose={toggleSubCategoryForm} />}
+      
       {selectedSubcategory && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h3 className="text-lg font-bold mb-4">Subcategory Detail</h3>
-            <p>
-              <strong>Subcategory ID:</strong> {selectedSubcategory.id}
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+        <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">Sub Category Details</h2>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>ID:</strong> {selectedSubcategory.id}
             </p>
-            <p>
+          </div>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
               <strong>Name:</strong> {selectedSubcategory.name}
             </p>
-            <button
-              className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
           </div>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>Status:</strong> {selectedSubcategory.is_active === '1' ? 'Active' : 'Inactive'}
+            </p>
+          </div>
+          <div className="mb-4">
+            <p className="text-lg text-gray-700">
+              <strong>Popularity:</strong> {selectedSubcategory.is_popular === '1' ? 'Popular' : 'Not Popular'}
+            </p>
+          </div>
+          <button
+            onClick={handleCloseModal}
+            className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
+          >
+            Close
+          </button>
         </div>
+      </div>
       )}
 
-      {showSubCategoryForm && (
+      {editingSubcategory && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            {/* Your SubCategoryForm content here */}
-            <SubCategoryForm onClose={toggleSubCategoryForm} />
+          <div className="bg-white w-2/3 max-h-[90vh] p-8 rounded-lg shadow-lg overflow-y-auto">
+            <h3 className="text-2xl font-bold mb-4">Edit Subcategory</h3>
+            <div className="space-y-4">
+              
+              
+      
+              
+            <div className="flex items-center justify-between mb-6">
+            <label className="text-gray-700 font-medium">Active Status:</label>
+            <button
+              onClick={() => handleToggleChange('is_active')}
+              className={`py-2 px-6 rounded-full transition-all duration-300 ${
+                editingSubcategory.is_active === '1' 
+                  ? 'bg-green-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {editingSubcategory.is_active === '1' ? 'On' : 'Off'}
+            </button>
+          </div>
+      
+          <div className="flex items-center justify-between mb-6">
+            <label className="text-gray-700 font-medium">Popular Status:</label>
+            <button
+              onClick={() => handleToggleChange('is_popular')}
+              className={`py-2 px-6 rounded-full transition-all duration-300 ${
+                editingSubcategory.is_popular === '1' 
+                  ? 'bg-green-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {editingSubcategory.is_popular === '1' ? 'On' : 'Off'}
+            </button>
+          </div>
+            </div>
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={handleSaveEdit}
+                className="bg-primary-green text-white py-2 px-4 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="bg-gray-500 text-white py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSubcategory}
+                className="bg-red-500 text-white py-2 px-4 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

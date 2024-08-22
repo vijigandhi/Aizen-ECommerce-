@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const Sellerlist = () => {
   const [sellers, setSellers] = useState([]);
@@ -126,12 +126,12 @@ const Sellerlist = () => {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{seller.name}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{seller.email}</td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button
-                  onClick={() => handleViewClick(seller.id)}
-                  className="text-indigo-600 hover:text-indigo-900"
-                >
-                  View
-                </button>
+              <button
+                    className="text-blue-500 hover:text-blue-700"
+                    onClick={() => handleViewClick(seller.id)}
+                  >
+                    <FaEye />
+                  </button>
               </td>
             </tr>
           ))}

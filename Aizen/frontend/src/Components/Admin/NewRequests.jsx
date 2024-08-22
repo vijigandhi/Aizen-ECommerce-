@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const NewRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -193,12 +193,12 @@ const NewRequests = () => {
                     <td className="py-3 px-6">{request.name}</td>
                     <td className="py-3 px-6">{request.request_details}</td>
                     <td className="py-3 px-6 text-center">
-                      <button
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded transition duration-300"
-                        onClick={() => handleViewClick(request)}
-                      >
-                        View
-                      </button>
+                    <button
+                    className="text-blue-500 hover:text-blue-700"
+                    onClick={() => handleViewClick(request)}
+                  >
+                    <FaEye />
+                  </button>
                     </td>
                   </tr>
                 ))}
@@ -227,39 +227,45 @@ const NewRequests = () => {
 
       {selectedRequest && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h3 className="text-lg font-bold mb-4">Request's Detail</h3>
-            <p>
-              <strong>Name:</strong> {selectedRequest.name}
-            </p>
-            <p>
-              <strong>Request Detail:</strong> {selectedRequest.request_details}
-            </p>
-            <p>
-              <strong>Created At:</strong> {new Date(selectedRequest.created_at).toLocaleDateString()}
-            </p>
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300"
-                onClick={handleApprove}
-              >
-                Approve
-              </button>
-              <button
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-300"
-                onClick={handleReject}
-              >
-                Reject
-              </button>
-              <button
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300"
-                onClick={handleCloseModal}
-              >
-                Close
-              </button>
-            </div>
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+          <div className="flex items-center mb-6">
+            <svg className="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <h3 className="text-xl font-semibold text-gray-800">Request's Detail</h3>
+          </div>
+          <p className="text-gray-700 mb-4">
+            <strong className="font-medium">Name:</strong> {selectedRequest.name}
+          </p>
+          <p className="text-gray-700 mb-4">
+            <strong className="font-medium">Request Detail:</strong> {selectedRequest.request_details}
+          </p>
+          <p className="text-gray-700 mb-6">
+            <strong className="font-medium">Created At:</strong> {new Date(selectedRequest.created_at).toLocaleDateString()}
+          </p>
+          <div className="flex justify-end space-x-3">
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md transition duration-300 shadow-md"
+              onClick={handleApprove}
+            >
+              Approve
+            </button>
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md transition duration-300 shadow-md"
+              onClick={handleReject}
+            >
+              Reject
+            </button>
+            <button
+              className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition duration-300 shadow-md"
+              onClick={handleCloseModal}
+            >
+              Close
+            </button>
           </div>
         </div>
+      </div>
+      
       )}
     </div>
   );

@@ -6,6 +6,7 @@ const SubCategoryForm = ({ onClose }) => {
   const [categoryId, setCategoryId] = useState('');
   const [image, setImage] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -17,9 +18,36 @@ const SubCategoryForm = ({ onClose }) => {
     fetchCategories();
   }, []);
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!subCategoryName.trim()) {
+      errors.subCategoryName = 'Subcategory name is required';
+    }
+
+    if (!description.trim()) {
+      errors.description = 'Description is required';
+    }
+
+    if (!categoryId) {
+      errors.categoryId = 'Please select a category';
+    }
+
+    if (!image) {
+      errors.image = 'Image is required';
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    if (!validateForm()) {
+      return;
+    }
+
     const formData = new FormData();
     formData.append('name', subCategoryName);
     formData.append('description', description);
@@ -41,7 +69,7 @@ const SubCategoryForm = ({ onClose }) => {
         setDescription('');
         setCategoryId('');
         setImage(null);
-        onClose(); // Close the form modal after successful submission
+        onClose();
       } else {
         alert('Failed to add subcategory: ' + result.message);
       }
@@ -50,85 +78,119 @@ const SubCategoryForm = ({ onClose }) => {
     }
   };
 
+  // Error clearing logic for each input
+  const handleInputChange = (field, value) => {
+    // Update the respective field value
+    if (field === 'subCategoryName') {
+      setSubCategoryName(value);
+    } else if (field === 'description') {
+      setDescription(value);
+    } else if (field === 'categoryId') {
+      setCategoryId(value);
+    } else if (field === 'image') {
+      setImage(value);
+    }
+
+    // Clear the error for the specific field if there was an error
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: '',
+    }));
+  };
+
   return (
-    <div className="relative">
-      <h2 className="text-xl font-bold mb-4">Add New Subcategory</h2>
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-      <form className="max-w-md mx-auto p-4 bg-white shadow-md rounded" onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subCategoryName">
-            Subcategory Name
-          </label>
-          <input
-            type="text"
-            id="subCategoryName"
-            value={subCategoryName}
-            onChange={(e) => setSubCategoryName(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-            Description
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category_id">
-            Select Category
-          </label>
-          <select
-            id="category_id"
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          >
-            <option value="">Select a category</option>
-            {Array.isArray(categories) && categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
-            Upload Image
-          </label>
-          <input
-            type="file"
-            id="image"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Add Subcategory
-          </button>
-        </div>
-      </form>
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+      <div className="relative bg-white p-5 rounded-lg shadow-lg">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <h2 className="text-xl font-bold mb-4">Add New Subcategory</h2>
+        <form
+          className="max-w-md mx-auto p-4 overflow-y-auto"
+          onSubmit={handleSubmit}
+          style={{ height: '400px' }}
+        >
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subCategoryName">
+              Subcategory Name
+            </label>
+            <input
+              type="text"
+              id="subCategoryName"
+              value={subCategoryName}
+              onChange={(e) => handleInputChange('subCategoryName', e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {errors.subCategoryName && (
+              <p className="text-red-500 text-xs mt-1">{errors.subCategoryName}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {errors.description && (
+              <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category_id">
+              Select Category
+            </label>
+            <select
+              id="category_id"
+              value={categoryId}
+              onChange={(e) => handleInputChange('categoryId', e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Select a category</option>
+              {Array.isArray(categories) && categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && (
+              <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+              Upload Image
+            </label>
+            <input
+              type="file"
+              id="image"
+              onChange={(e) => handleInputChange('image', e.target.files[0])}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {errors.image && (
+              <p className="text-red-500 text-xs mt-1">{errors.image}</p>
+            )}
+          </div>
+          <div className="flex items-center justify-between">
+            <button
+              type="submit"
+              className="bg-primary-green hover:bg-green-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Add Subcategory
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default SubCategoryForm;
-

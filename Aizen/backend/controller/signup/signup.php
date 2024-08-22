@@ -78,20 +78,18 @@ try {
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'aizendckap@gmail.com';
-            $mail->Password   = 'nxwe euhq phcg zjsz';
+            $mail->Password   = 'nxwe euhq phcg zjsz'; // Check for spaces or special characters
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
-
+        
             $mail->setFrom('aizendckap@gmail.com', 'Aizen Dckap');
-            $mail->addAddress($email, $firstname);
-
+            $mail->addAddress($email, $name);
+        
             $mail->isHTML(true);
             $mail->Subject = 'Registration Successful';
-
         
             $imageUrl = 'https://static.vecteezy.com/system/resources/previews/002/823/532/non_2x/welcome-to-hotel-flat-color-illustration-hospitality-business-accommodation-service-hall-porter-doorman-resort-manager-working-staff-isolated-cartoon-characters-on-white-vector.jpg';
-           
-
+        
             $mail->Body = '
             <html>
             <head>
@@ -105,13 +103,13 @@ try {
                         background-color: #f4f4f4;
                     }
                     .container {
-                           max-width: 600px;
-                            margin: auto;
-                            background: #f9f9f9;
-                            border-radius: 8px;
-                            overflow: hidden;
-                            padding: 20px;
-                            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                        max-width: 600px;
+                        margin: auto;
+                        background: #f9f9f9;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        padding: 20px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
                     }
                     .header {
                         background: black;
@@ -151,13 +149,30 @@ try {
                         text-decoration: none;
                     }
                     .logo {
-                            font-family: Montserrat, cursive;
-                            color: #4CAF50; /* Green color */
-                            font-size: 48px; /* Large font size */
-                            font-weight: bold;
-                            text-align: center;
-                            margin: 20px 0;
-                        }
+                        font-family: Montserrat, cursive;
+                        color: #4CAF50; /* Green color */
+                        font-size: 48px; /* Large font size */
+                        font-weight: bold;
+                        text-align: center;
+                        margin: 20px 0;
+                    }
+                    .button {
+                        display: inline-block;
+                        font-size: 16px;
+                        color: #fff;
+                        background-color: #4CAF50;
+                        padding: 12px 24px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        text-align: center;
+                        margin: 20px 0;
+                        border: 1px solid #4CAF50;
+                        transition: background-color 0.3s, color 0.3s;
+                    }
+                    .button:hover {
+                        background-color: #45a049;
+                        color: #fff;
+                    }
                 </style>
             </head>
             <body>
@@ -166,20 +181,19 @@ try {
                         <h1 class="logo">Welcome to Aizen</h1>
                     </div>
                     <div class="content">
-                        <h2>Hi ' . htmlspecialchars($firstname) . ',</h2>
+                        <h2>Hi ' . htmlspecialchars($name) . ',</h2>
                         <p>Welcome! Your registration is completed.</p>
                         <img src="' . $imageUrl . '" alt="Welcome Image">
+                        <a href="http://localhost:3000/home" class="button">Go to Aizen</a>
                         <p>If you have any questions, feel free to <a href="mailto:aizendckap@gmail.com">contact us</a>.</p>
                     </div>
                     <div class="footer">
-                       <p>&copy; ' . date("Y") . ' Aizen. All rights reserved.</p>
+                        <p>&copy; ' . date("Y") . ' Aizen. All rights reserved.</p>
                     </div>
                 </div>
             </body>
-            </html>
-            ';
-            
-
+            </html>';
+        
             $mail->send();
 
             $response['status'] = 'success';

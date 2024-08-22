@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 require './db_connect.php'; // Include your database connection file
 
-$sql = "SELECT id, name FROM stores";
+$sql = "SELECT * FROM stores";
 $result = $conn->query($sql);
 $stores = [];
 
