@@ -18,6 +18,31 @@ export const adminMenu = [
       title: 'Spices', 
       key: 'spices',
       
+    },
+    {
+      title: 'Dry Fruits', 
+      key: 'dryfruits',
+      
+    },
+    {
+      title: 'Dairy Products', 
+      key: 'dairyproducts',
+      
+    },
+    {
+      title: 'Meat, Fish & Eggs', 
+      key: 'meats',
+      
+    },
+    {
+      title: 'Atta & Rice', 
+      key: 'rice',
+      
+    },
+    {
+      title: 'Plant Sapplings', 
+      key: 'sapplings',
+      
     }
   ];
   

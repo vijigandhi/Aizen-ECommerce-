@@ -13,6 +13,11 @@ import Banner from './Banner';
 import Cart from '../cart/cart';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import MeatList from './MeatList';
+import AttaAndRiceList from './AttaAndRiceList';
+import DairyProducts from './DairyProducts';
+import SapplingsList from './SapplingsList';
+import DryfruitsList from './DryfruitsList';
 
 const AizenView = () => {
 
@@ -46,6 +51,11 @@ const AizenView = () => {
             <Route path="/fresh-fruits/*" element={<FruitsList searchTerm={searchTerm} storeId={storeId} />} />
             <Route path="/fresh-vegetables/*" element={<VegetablesList searchTerm={searchTerm} storeId={storeId} />} />
             <Route path="/spices/*" element={<SpicesList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/meats/*" element={<MeatList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/dryfruits/*" element={<DryfruitsList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/dairyproducts/*" element={<DairyProducts searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/rice/*" element={<AttaAndRiceList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/sapplings/*" element={<SapplingsList searchTerm={searchTerm} storeId={storeId} />} />
           
           </Routes>
         </div>
