@@ -55,7 +55,7 @@ const HomePage = () => {
 
         setProducts(shuffleArray(productsResponse.data.allProducts || []));
         setPopularProducts(productsResponse.data.popularProducts || []);
-        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10)); // Initial load
+        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10));
       } catch (error) {
         setError('Error fetching data');
         console.error('Error fetching data:', error);
@@ -216,7 +216,7 @@ const HomePage = () => {
 
 
       </div>
-      <section className="w-full bg-gray-100 lg:px-16 m-0 shadow-none"> {/* Increased padding for larger screens */}
+      <section className="w-full bg-gray-100 lg:px-16 m-0 shadow-none">
   <h2 className="text-3xl font-semibold text-gray-800 text-center mb-10">Meet Our Team</h2>
   <div className="flex flex-wrap gap-6 justify-center">
     <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
