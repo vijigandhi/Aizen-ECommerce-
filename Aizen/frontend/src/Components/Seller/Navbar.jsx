@@ -37,8 +37,8 @@ const Navbar = ({ selectedMenuTitle }) => {
   }, []);
 
   return (
-    <header className="bg-white h-15 shadow-md p-4 flex justify-between items-center">
-      <div className="title text-xl text-gray-500 font-semibold">
+    <header className="bg-white h-14 shadow-md p-4 flex justify-between items-center">
+      <div className="title text-xl text-green-900 font-semibold">
         Seller Portal / {selectedMenuTitle}
       </div>
       <div className="flex items-center space-x-4 relative" ref={dropdownRef}>

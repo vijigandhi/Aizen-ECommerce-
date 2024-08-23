@@ -10,9 +10,11 @@ const Profile = ({ setProfileOpen }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState('https://via.placeholder.com/150');
+  const [imageUrl, setImageUrl] = useState('https://static.thenounproject.com/png/547804-200.png');
   const [avatarFile, setAvatarFile] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [email, setEmail] = useState(''); // Add state for email
+  const [roleId, setRoleId] = useState(null); // Add state for role_id
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
 
@@ -31,10 +33,11 @@ const Profile = ({ setProfileOpen }) => {
         });
 
         if (response.data.status === 'success') {
-          const { id, role_id } = response.data.user;
-          setUserId(id);
-          setProfile(response.data.user);
-          setFormData(response.data.user);
+          setUserId(response.data.user.id);
+          setEmail(response.data.user.email); // Set email from response
+          setRoleId(response.data.user.role_id); // Set role_id from response
+          console.log("profile role:",response.data.user);
+          
         } else {
           setError(response.data.message);
         }
@@ -66,7 +69,7 @@ const Profile = ({ setProfileOpen }) => {
 
         setProfile(response.data);
         setFormData(response.data);
-        setImageUrl(response.data.avatar || 'https://via.placeholder.com/150');
+        setImageUrl(response.data.avatar || 'https://static.thenounproject.com/png/547804-200.png');
       } catch (error) {
         console.error('Error fetching profile:', error.response?.data || error.message);
       }
@@ -77,20 +80,20 @@ const Profile = ({ setProfileOpen }) => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.name) errors.name = 'Username is required';
-    if (!formData.email) errors.email = 'Email is required';
-    if (!/^\d+$/.test(formData.mobile_no)) errors.mobile_no = 'Mobile number must be numeric';
-    if (!formData.mobile_no) errors.mobile_no = 'Mobile number is required';
-    if (!formData.address_line1) errors.address_line1 = 'Address Line 1 is required';
-    if (!formData.address_line2) errors.address_line2 = 'Address Line 2 is required';
-    if (!formData.address_line3) errors.address_line3 = 'Address Line 3 is required';
 
-    // Address line 2 and 3 are not required, so no validation for these fields
-  
+    // Validate that the mobile number is numeric
+    if (!/^\d+$/.test(formData.mobile_no)) {
+      errors.mobile_no = 'Mobile number must be numeric';
+    }
+
+    // Validate that the mobile number is exactly 10 digits long
+    if (formData.mobile_no.length !== 10) {
+      errors.mobile_no = 'Mobile number must be exactly 10 digits';
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -183,192 +186,193 @@ const Profile = ({ setProfileOpen }) => {
   return (
     <>
       <Header />
-      <section className="p-6 max-w-4xl mx-auto">
-        <div className={`bg-white shadow-lg rounded-lg p-6 ${isEditing ? 'mt-0' : 'mt-24'}`}>
-          <div className="flex items-center mb-6">
-            <div className="w-24 h-24 rounded-full overflow-hidden mr-6 cursor-pointer" onClick={() => document.getElementById('fileInput').click()}>
-              <img src={imageUrl} alt="Profile Avatar" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold">{profile.name}</h2>
-              <p className="text-gray-600">{profile.email}</p>
-            </div>
+      <div className={` max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 ${isEditing ? 'mt-12' : 'mt-12'}`}>
+        <div className="flex items-center mb-6">
+          <div
+            className="w-24 h-24 rounded-full overflow-hidden mr-6 cursor-pointer"
+            onClick={() => {
+              if (isEditing) {
+                document.getElementById('fileInput').click();
+              } 
+            }}
+          >
+            <img src={imageUrl} alt="Profile Avatar" className="w-full h-full object-cover" />
           </div>
+
           <div>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Username <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                      />
-                      {validationErrors.name && <p className="text-red-500 text-sm">{validationErrors.name}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.name}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                      />
-                      {validationErrors.email && <p className="text-red-500 text-sm">{validationErrors.email}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.email}</p>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Mobile <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        name="mobile_no"
-                        value={formData.mobile_no || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                        pattern="\d*"
-                        inputMode="numeric"
-                      />
-                      {validationErrors.mobile_no && <p className="text-red-500 text-sm">{validationErrors.mobile_no}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.mobile_no}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Address Line 1 <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        name="address_line1"
-                        value={formData.address_line1 || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                      />
-                      {validationErrors.address_line1 && <p className="text-red-500 text-sm">{validationErrors.address_line1}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.address_line1}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Address Line 2 <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        name="address_line2"
-                        value={formData.address_line2 || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                      />
-                      {validationErrors.address_line2 && <p className="text-red-500 text-sm">{validationErrors.address_line2}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.address_line2}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Address Line 3 <span className="text-red-500">*</span>
-                  </label>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        name="address_line3"
-                        value={formData.address_line3 || ''}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                      />
-                      {validationErrors.address_line3 && <p className="text-red-500 text-sm">{validationErrors.address_line3}</p>}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-gray-900">{profile.address_line3}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex justify-end mt-6">
+            <h2 className="text-2xl font-semibold">{profile.name}</h2>
+            {/* <p className="text-gray-600 mt-2">{email}</p> Display email */}
+            <p className="text-gray-600 mt-2">{profile.email}</p> {/* Display role_id */}
+          </div>
+        </div>
+        <div>
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-900">
+                  Username 
+                </label>
                 {isEditing ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={handleSaveClick}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCancelClick}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                    >
-                      Cancel
-                    </button>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleChange}
+                      className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    />
                   </>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={handleEditClick}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                  >
-                    Edit Profile
-                  </button>
+                  <p className="mt-1 text-gray-900">{profile.name}</p>
                 )}
               </div>
-              <input
-                type="file"
-                id="fileInput"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </form>
-          </div>
-          </div><br />
-        <p>
-          Interested in becoming a{' '}
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Email
+                </label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email || ''}
+                      onChange={handleChange}
+                      className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    />
+                  </>
+                ) : (
+                  <p className="mt-1 text-gray-900">{profile.email}</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Mobile 
+                </label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="mobile_no"
+                      value={formData.mobile_no || ''}
+                      onChange={handleChange}
+                      className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    />
+                    {validationErrors.mobile_no && (
+                      <p className="text-red-500 text-sm">{validationErrors.mobile_no}</p>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-1 text-gray-900">{profile.mobile_no}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Address 1
+                </label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="address_line_1"
+                      value={formData.address_line_1 || ''}
+                      onChange={handleChange}
+                      className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    />
+                  </>
+                ) : (
+                  <p className="mt-1 text-gray-900">{profile.address_line_1}</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Address 2
+                </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="address_line_2"
+                    value={formData.address_line_2 || ''}
+                    onChange={handleChange}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  />
+                ) : (
+                  <p className="mt-1 text-gray-900">{profile.address_line_2}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Address 3
+                </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="address_line_3"
+                    value={formData.address_line_3 || ''}
+                    onChange={handleChange}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  />
+                ) : (
+                  <p className="mt-1 text-gray-900">{profile.address_line_3}</p>
+                )}
+              </div>
+            </div>
+          </form>
+          {isEditing ? (
+            <div className="flex justify-end mt-6 space-x-4">
+              <button
+                onClick={handleSaveClick}
+                className="bg-primary-green text-white py-2 px-4 rounded-md shadow hover:bg-green-600"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancelClick}
+                className="bg-gray-500 text-white py-2 px-4 rounded-md shadow hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleEditClick}
+                className="bg-secondary-yellow text-white py-2 px-4 rounded-md shadow hover:bg-yellow-500"
+              >
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
+      {/* </div> */}
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+        {roleId === 3 && (
+   
+   <p>
+        Interested in becoming a{' '}
           <a
             href="#"
-            onClick={() => setIsModalOpen(true)} // Ensure this function is working
+            onClick={() => setIsModalOpen(true)}
             className="text-blue-500 hover:text-blue-700 font-bold"
           >
             Vendor ?
           </a>
       </p>
-    {isModalOpen && <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+        )}
 
-        {/* </div> */}
-      </section>
+      {isModalOpen && <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
       <ToastContainer />
+          </div><br />
+        
       
     </>
   );

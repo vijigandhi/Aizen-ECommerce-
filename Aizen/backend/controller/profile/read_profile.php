@@ -32,11 +32,26 @@ if ($conn) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // Add base URL to avatar path if it exists
-        if (!empty($user['avatar'])) {
-            $user['avatar'] = 'http://localhost:8000/controller/profile/uploads/' . $user['avatar']; 
+        // Debug: Log the retrieved avatar field from the database
+        error_log("Retrieved Avatar Field: " . $user['avatar']);
+
+        // Check if avatar is an external URL
+        if (!empty($user['avatar']) && (strpos($user['avatar'], 'http://') === 0 || strpos($user['avatar'], 'https://') === 0)) {
+            // Debug: Log the external URL
+            error_log("Using external avatar URL: " . $user['avatar']);
+            $user['avatar'] = $user['avatar']; // Use the external URL as is
         } else {
-            $user['avatar'] = null; // Or set a default avatar URL
+            // Construct URL for local avatars
+            if (!empty($user['avatar'])) {
+                $user['avatar'] = 'http://localhost:8000/controller/profile/uploads/' . $user['avatar'];
+                // Debug: Log the constructed local URL
+                error_log("Constructed local avatar URL: " . $user['avatar']);
+            } else {
+                // Optional: Set a default avatar URL if no avatar is found
+                $user['avatar'] = 'http://localhost:8000/controller/profile/uploads/default-avatar.png';
+                // Debug: Log the default URL
+                error_log("No avatar found, using default avatar URL: " . $user['avatar']);
+            }
         }
 
         echo json_encode($user);

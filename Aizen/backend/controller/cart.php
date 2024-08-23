@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($cartItems)) {
-            echo json_encode(['error' => 'No items found for user: ']);
+            echo json_encode(['error' => 'No items found for user']);
         } else {
             echo json_encode($cartItems);
         }
@@ -58,18 +58,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($action === 'update_quantity' && $cart_item_id !== null && $quantity !== null) {
             try {
-                $stmt = $pdo->prepare("SELECT quantity FROM cart_item WHERE cart_item_id = :cart_item_id");
+                // Fetch the cart item
+                $stmt = $pdo->prepare("SELECT quantity, product_id FROM cart_item WHERE cart_item_id = :cart_item_id");
                 $stmt->bindParam(':cart_item_id', $cart_item_id, PDO::PARAM_INT);
                 $stmt->execute();
                 $item = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($item) {
-                    $stmt = $pdo->prepare("UPDATE cart_item SET quantity = :quantity WHERE cart_item_id = :cart_item_id");
-                    $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-                    $stmt->bindParam(':cart_item_id', $cart_item_id, PDO::PARAM_INT);
+                    // Fetch available quantity from products table
+                    $stmt = $pdo->prepare("SELECT quantity FROM products WHERE id = :product_id");
+                    $stmt->bindParam(':product_id', $item['product_id'], PDO::PARAM_INT);
                     $stmt->execute();
+                    $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    echo json_encode(['success' => true, 'message' => 'Product quantity updated']);
+                    if ($product) {
+                        if ($quantity <= $product['quantity']) {
+                            $stmt = $pdo->prepare("UPDATE cart_item SET quantity = :quantity WHERE cart_item_id = :cart_item_id");
+                            $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+                            $stmt->bindParam(':cart_item_id', $cart_item_id, PDO::PARAM_INT);
+                            $stmt->execute();
+
+                            echo json_encode(['success' => true, 'message' => 'Product quantity updated']);
+                        } else {
+                            echo json_encode(['success' => false, 'message' => 'Quantity exceeds available stock']);
+                        }
+                    } else {
+                        echo json_encode(['success' => false, 'message' => 'Product not found']);
+                    }
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Cart item not found']);
                 }
@@ -112,27 +127,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
                 $existingQuantity = $stmt->fetchColumn();
 
-                if ($existingQuantity !== false) {
-                    $newQuantity = $existingQuantity + $quantity;
-                    $stmt = $pdo->prepare("UPDATE cart_item SET quantity = :quantity, price = :price, strikeout_price = :strikeout_price, total = :total WHERE cart_id = :cart_id AND product_id = :product_id");
-                    $stmt->bindParam(':quantity', $newQuantity, PDO::PARAM_INT);
-                    $stmt->bindParam(':cart_id', $cart_id, PDO::PARAM_INT);
-                    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
-                    $stmt->bindParam(':price', $price);
-                    $stmt->bindParam(':strikeout_price', $strikeout_price);
-                    $stmt->bindParam(':total', $total);
-                    $stmt->execute();
-                    echo json_encode(['success' => true, 'message' => 'Product quantity updated']);
+                // Fetch available quantity from products table
+                $stmt = $pdo->prepare("SELECT quantity FROM products WHERE id = :product_id");
+                $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($product) {
+                    if (($existingQuantity + $quantity) <= $product['quantity']) {
+                        if ($existingQuantity !== false) {
+                            $newQuantity = $existingQuantity + $quantity;
+                            $stmt = $pdo->prepare("UPDATE cart_item SET quantity = :quantity, price = :price, strikeout_price = :strikeout_price, total = :total WHERE cart_id = :cart_id AND product_id = :product_id");
+                            $stmt->bindParam(':quantity', $newQuantity, PDO::PARAM_INT);
+                            $stmt->bindParam(':cart_id', $cart_id, PDO::PARAM_INT);
+                            $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+                            $stmt->bindParam(':price', $price);
+                            $stmt->bindParam(':strikeout_price', $strikeout_price);
+                            $stmt->bindParam(':total', $total);
+                            $stmt->execute();
+                            echo json_encode(['success' => true, 'message' => 'Product quantity updated']);
+                        } else {
+                            $stmt = $pdo->prepare("INSERT INTO cart_item (cart_id, product_id, quantity, price, strikeout_price, total) VALUES (:cart_id, :product_id, :quantity, :price, :strikeout_price, :total)");
+                            $stmt->bindParam(':cart_id', $cart_id, PDO::PARAM_INT);
+                            $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+                            $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+                            $stmt->bindParam(':price', $price);
+                            $stmt->bindParam(':strikeout_price', $strikeout_price);
+                            $stmt->bindParam(':total', $total);
+                            $stmt->execute();
+                            echo json_encode(['success' => true, 'message' => 'Product added to cart']);
+                        }
+                    } else {
+                        echo json_encode(['success' => false, 'message' => 'Quantity exceeds available stock']);
+                    }
                 } else {
-                    $stmt = $pdo->prepare("INSERT INTO cart_item (cart_id, product_id, quantity, price, strikeout_price, total) VALUES (:cart_id, :product_id, :quantity, :price, :strikeout_price, :total)");
-                    $stmt->bindParam(':cart_id', $cart_id, PDO::PARAM_INT);
-                    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
-                    $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-                    $stmt->bindParam(':price', $price);
-                    $stmt->bindParam(':strikeout_price', $strikeout_price);
-                    $stmt->bindParam(':total', $total);
-                    $stmt->execute();
-                    echo json_encode(['success' => true, 'message' => 'Product added to cart']);
+                    echo json_encode(['success' => false, 'message' => 'Product not found']);
                 }
             } else {
                 echo json_encode(['success' => false, 'message' => 'Invalid user ID']);
@@ -171,3 +200,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     }
     exit;
 }
+?>

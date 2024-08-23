@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaStore, FaUsers, FaClipboardList } from 'react-icons/fa';
+import { FaTachometerAlt, FaStore, FaUsers, FaClipboardList, FaMapMarkerAlt,FaTags, FaListAlt } from 'react-icons/fa';
+
 
 const AdminSideBar = ({ setSelectedMenuTitle }) => {
   const location = useLocation();
@@ -12,6 +13,9 @@ const AdminSideBar = ({ setSelectedMenuTitle }) => {
     { title: 'Store Management', key: 'stores', icon: <FaStore /> },
     { title: 'User Management', key: 'users', icon: <FaUsers /> },
     { title: 'Request Management', key: 'requests', icon: <FaClipboardList /> },
+    { title: 'Address Management', key: 'address', icon: <FaMapMarkerAlt />    },
+    { title: 'Category Management', key: 'categories', icon: <FaTags />    }
+
     // Add more items as needed
   ];
 

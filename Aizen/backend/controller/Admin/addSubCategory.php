@@ -6,29 +6,34 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require 'db_connect.php';
 
-// Read the input data
-$data = json_decode(file_get_contents('php://input'), true);
+$data = $_POST;
 
-// Validate input data
-if (!isset($data['name']) || !isset($data['category_id'])) {
+if (!isset($data['name']) || !isset($data['category_id']) || !isset($data['description'])) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }
 
 $subCategoryName = $conn->real_escape_string($data['name']);
 $categoryId = (int)$data['category_id'];
+$description = $conn->real_escape_string($data['description']);
 
-// Check if the category exists
-$checkSql = "SELECT id FROM categories WHERE id = $categoryId";
-$checkResult = $conn->query($checkSql);
+$imageName = null;
 
-if ($checkResult->num_rows === 0) {
-    echo json_encode(['success' => false, 'message' => 'Invalid category ID']);
-    exit;
+if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    $imageTmpName = $_FILES['image']['tmp_name'];
+    $imageName = basename($_FILES['image']['name']);
+    $uploadDir = '../../assets/images/';
+    $uploadFile = $uploadDir . $imageName;
+
+    if (!move_uploaded_file($imageTmpName, $uploadFile)) {
+        echo json_encode(['success' => false, 'message' => 'Failed to upload image']);
+        exit;
+    }
 }
 
-// SQL query to insert data into the subcategories table
-$sql = "INSERT INTO subcategories (name, category_id) VALUES ('$subCategoryName', '$categoryId')";
+$imagesJson = $imageName ? json_encode([$imageName]) : '[]';
+
+$sql = "INSERT INTO subcategories (name, description, category_id, images) VALUES ('$subCategoryName', '$description', $categoryId, '$imagesJson')";
 
 try {
     if ($conn->query($sql) === TRUE) {

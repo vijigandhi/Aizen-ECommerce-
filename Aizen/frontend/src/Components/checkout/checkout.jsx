@@ -1,286 +1,375 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CartSummary from './CartSummary'; // Ensure the path is correct
+import CartSummary from './CartSummary';
 import Header from '../Header';
+import Swal from 'sweetalert2';
 
 const Checkout = () => {
-
-  
   const [formData, setFormData] = useState({
     shippingName: '',
     houseDetail: '',
-    areaTown: '',
     zipcode: '',
     phoneNo: '',
-    Country: 'India',
-    stateSelect: 'Tamil Nadu',
+    Country: '',
+    stateSelect: '',
+    city: '',
     userId: null,
-    total:0,
-  //  paymentMethod: ''
+    total: 0,
+    paymentMethod: '',
   });
 
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-   
+  const [loading, setLoading] = useState(false); // Add loading state
+
   useEffect(() => {
-    const fetchData = async () => {
-      // Retrieve and parse data from localStorage
-      const storedFormData = JSON.parse(localStorage.getItem('formData'));
-      if (storedFormData) {
-        setFormData(storedFormData);
-      }
-  
-      const storedCartItems = JSON.parse(localStorage.getItem('cartItems'));
-      if (storedCartItems) {
-        setCartItems(storedCartItems);
-      }
-  
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const storedTotal = JSON.parse(localStorage.getItem('total')); // Retrieve total as string first
-  
-      // Parse total and ensure it's a number
-      const total = storedTotal ? parseFloat(storedTotal) : 1;
-  
-      // Update formData if user data is available and total is non-zero
-      if (userData && userData.id && total !== 0.00) {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          userId: userData.id,
-          total: total,
-        }));
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/controller/Admin/getCountries.php');
+        setCountries(response.data.countries || []);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
       }
     };
-  
-    fetchData();
+
+    fetchCountries();
   }, []);
-  
+
+  useEffect(() => {
+    if (formData.Country) {
+      const fetchStatesForCountry = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/controller/state.php?country=${formData.Country}`);
+          setStates(response.data || []);
+          setCities([]);
+        } catch (error) {
+          console.error('Error fetching states:', error);
+        }
+      };
+
+      fetchStatesForCountry();
+    }
+  }, [formData.Country]);
+
+  useEffect(() => {
+    if (formData.stateSelect) {
+      const fetchCitiesForState = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/controller/city.php?state=${formData.stateSelect}`);
+          setCities(response.data || []);
+        } catch (error) {
+          console.error('Error fetching cities:', error);
+        }
+      };
+
+      fetchCitiesForState();
+    }
+  }, [formData.stateSelect]);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const userId = formData.userId || localStorage.getItem('userId');
+        if (userId) {
+          const response = await axios.get('http://localhost:8000/controller/getCartItem.php', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            params: { user_id: userId },
+          });
+          setCartItems(response.data.cartItems || []);
+          setFormData(prev => ({ ...prev, total: response.data.total }));
+        }
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+        setError('Error fetching cart items');
+      }
+    };
+
+    fetchCartItems();
+  }, [formData.userId]);
 
   const handleChange = (e) => {
-
-    localStorage.setItem('payment',true)
-    
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      
-      ...prevState,
-      [name]: value,
-
-    }));
+    setFormData((prevState) => {
+      const updatedFormData = { ...prevState, [name]: value };
+      localStorage.setItem('formData', JSON.stringify(updatedFormData));
+      return updatedFormData;
+    });
   };
 
   const handleNextStep = () => {
-    localStorage.setItem('formData', JSON.stringify(formData));
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     setError('');
-    if (localStorage.getItem('payment') == 'true') {
-      axios.post('http://localhost:8000/controller/checkout.php', {
-        ...formData,
-      })
-      .then((response) => {
-        if (response.data.status === 'success') {
-          setShowConfirmation(true);
-          localStorage.removeItem('payment');
-          localStorage.removeItem('formData');
-          localStorage.removeItem('cartItems');
-          
-        } 
-        else {
-          setError(response.data.message);
-        }
-      })
-      .catch((error) => {
-        setError('Failed to place order. Please try again.');
-      });
-    } else {
+    setLoading(true); // Set loading to true
 
-      setError('Sorry! This method is not working currently.');
+    if (!formData.paymentMethod) {
+      setError('Please select a payment method.');
+      setLoading(false); // Set loading to false
+      return;
+    }
+
+    try {
+      console.log('Placing order with data:', formData);
+
+      const response = await axios.post('http://localhost:8000/controller/checkout.php', {
+        ...formData,
+        cartItems,
+      });
+
+      console.log('Checkout API Response:', response.data);
+
+      if (response.data.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Order Confirmed!',
+          text: 'Thank you for your purchase. Redirecting to home...',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        // Update cart quantities
+        try {
+          const updateResponse = await axios.post('http://localhost:8000/controller/updatequantity.php', {
+            userId: formData.userId,
+            items: cartItems.map(item => ({
+              cart_item_id: item.cart_item_id,
+              quantity: item.quantity,
+            })),
+          });
+
+          console.log('Update Response:', updateResponse.data);
+
+          if (updateResponse.data.success) {
+            localStorage.removeItem('payment');
+            localStorage.removeItem('formData');
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('total');
+
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 2000);
+          } else {
+            setError(updateResponse.data.error || 'Failed to update quantities. Please try again.');
+          }
+        } catch (updateError) {
+          console.error('Update failed:', updateError);
+          setError('An error occurred while updating quantities. Please try again.');
+        }
+      } else {
+        setError(response.data.message || 'Failed to place order. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error placing order:', err);
+      setError('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false); // Set loading to false
     }
   };
-  
+
+  const handleTotalChange = (total) => {
+    setFormData((prev) => ({ ...prev, total: parseFloat(total) }));
+  };
+
+  const handleUserIdChange = (userId) => {
+    setFormData((prev) => ({ ...prev, userId }));
+  };
 
   return (
     <div>
-      <Header/>
-       <div className="min-h-screen bg-gray-100 py-10 px-2 sm:px-3 lg:px-4">
-      <div className="max-w-7xl mx-auto flex gap-4">
-        {/* Shipping Information */}
-        <div className="flex-1 bg-white shadow-md rounded-lg p-4">
-          {currentStep === 1 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-              <form>
-                <div className="mb-2">
-                  <label htmlFor="shippingName" className="block text-sm font-medium text-gray-700">
-                    Shipping Name
-                  </label>
-                  <input
-                    type="text"
-                    name="shippingName"
-                    id="shippingName"
-                    value={formData.shippingName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="houseDetail" className="block text-sm font-medium text-gray-700">
-                    House Details
-                  </label>
-                  <input
-                    type="text"
-                    name="houseDetail"
-                    id="houseDetail"
-                    value={formData.houseDetail}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="areaTown" className="block text-sm font-medium text-gray-700">
-                    Area/Town
-                  </label>
-                  <input
-                    type="text"
-                    name="areaTown"
-                    id="areaTown"
-                    value={formData.areaTown}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="zipcode" className="block text-sm font-medium text-gray-700">
-                    Zipcode
-                  </label>
-                  <input
-                    type="text"
-                    name="zipcode"
-                    id="zipcode"
-                    value={formData.zipcode}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="phoneNo" className="block text-sm font-medium text-gray-700">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    name="phoneNo"
-                    id="phoneNo"
-                    value={formData.phoneNo}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="Country" className="block text-sm font-medium text-gray-700">
-                    Country
-                  </label>
-                  <input
-                    type="text"
-                    name="Country"
-                    id="Country"
-                    value={formData.Country}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:ring-green-500 focus:border-green-500 sm:text-base"
-                    
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="stateSelect" className="block text-sm font-medium text-gray-700">
-                    State
-                  </label>
-                  <select
-                    name="stateSelect"
-                    id="stateSelect"
-                    value={formData.stateSelect}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  >
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                    {/* Add other states if necessary */}
-                  </select>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-                >
-                  Continue
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* Payment Method */}
-          {currentStep === 2 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-              <div className="bg-white p-4 rounded-lg shadow-md mt-4">
-                <div className="flex items-center mb-4">
-                  <input type="radio" id="credit-card" name="paymentMethod" value="credit-card" className="mr-2" onChange={handleChange} />
-                  <label htmlFor="credit-card" className="text-gray-500">Credit or Debit card (VISA)</label>
-                  <img id="cardImage" src="/Assets/Cards.png" alt="" className="ml-4" />
-                </div>
-                <div className="flex items-center mb-4">
-                  <input type="radio" id="net-banking" name="paymentMethod" value="net-banking" className="mr-2" onChange={handleChange} />
-                  <label htmlFor="net-banking" className="text-gray-500">Net Banking</label>
-                  <select className="ml-4 text-gray-500" defaultValue="">
-                    <option value="" disabled>Select an option</option>
-                    <option value="SBI">SBI</option>
-                    <option value="HDFC">HDFC</option>
-                  </select>
-                </div>
-                <div className="flex items-center mb-4">
-                  <input type="radio" id="upi" name="paymentMethod" value="upi" className="mr-2" onChange={handleChange} />
-                  <label htmlFor="upi" className="text-gray-500">Other UPI Apps</label>
-                </div>
-                <div className="flex items-center mb-4">
-                  <input type="radio" id="cod" name="paymentMethod" value="cod" className="mr-2" onChange={handleChange } />
-                  <label htmlFor="cod">Cash on delivery (COD) </label>
-                   
-                  
-                  <p id="cod-info" className="text-sm text-gray-500 ml-2">Cash, UPI accepted</p>
-                </div>
+      <Header />
+      <div className="min-h-screen bg-gray-100 py-10 px-2 sm:px-3 lg:px-4">
+        <div className="max-w-7xl mx-auto flex gap-4">
+          <div className="flex-1 bg-white shadow-md rounded-lg p-4">
+            {loading && (
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                <div className="text-white text-xl">Loading...</div>
               </div>
-              <button
-                type="button"
-                onClick={handlePlaceOrder}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-              >
-                Place Order
-              </button>
-              {error && <p className="text-red-600 mt-2">{error}</p>}
-            </div>
-          )}
-
-          {/* Confirmation Message */}
-          {showConfirmation && (
-            <div className="mt-4 text-green-600">
-              <h2 className="text-xl font-semibold mb-4">Order Placed Successfully!</h2>
-              <p>Thank you for your purchase.</p>
-            </div>
-          )}
+            )}
+            {currentStep === 1 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+                <form>
+                  <label className="block mb-2">
+                    Full Name:
+                    <input
+                      type="text"
+                      name="shippingName"
+                      value={formData.shippingName}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  </label>
+                  <label className="block mb-2">
+                    House Detail:
+                    <input
+                      type="text"
+                      name="houseDetail"
+                      value={formData.houseDetail}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  </label>
+                  <label className="block mb-2">
+                    Zipcode:
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={formData.zipcode}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  </label>
+                  <label className="block mb-2">
+                    Phone Number:
+                    <input
+                      type="tel"
+                      name="phoneNo"
+                      value={formData.phoneNo}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  </label>
+                  <label className="block mb-2">
+                    Country:
+                    <select
+                      name="Country"
+                      value={formData.Country}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    >
+                      <option value="">Select a country</option>
+                      {countries.map((country) => (
+                        <option key={country.id} value={country.id}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block mb-2">
+                    State:
+                    <select
+                      name="stateSelect"
+                      value={formData.stateSelect}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    >
+                      <option value="">Select a state</option>
+                      {states.map((state) => (
+                        <option key={state.id} value={state.id}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block mb-2">
+                    City:
+                    <select
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                      required
+                    >
+                      <option value="">Select a city</option>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.id}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={handleNextStep}
+                      className="w-full bg-primary-green text-white py-2 px-4 rounded-md"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+            {currentStep === 2 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
+                <form>
+                  <label className="block mb-2">Payment Method:</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cod"
+                        checked={formData.paymentMethod === 'cod'}
+                        onChange={handleChange}
+                        className="mr-2"
+                        required
+                      />
+                      Cash on Delivery
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="upi"
+                        checked={formData.paymentMethod === 'upi'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      UPI
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="credit_card"
+                        checked={formData.paymentMethod === 'credit_card'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      Credit Card
+                    </label>
+                  </div>
+        
+                  {/* Conditional rendering to show future feature message */}
+                  {(formData.paymentMethod === 'upi' || formData.paymentMethod === 'credit_card') && (
+                    <p className="mt-2 text-red-600">This payment option currently not available. Please choose cash on delivery</p>
+                  )}
+        
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={handlePlaceOrder}
+                      className="w-full bg-green-600 text-white py-2 px-4 rounded-md"
+                      disabled={formData.paymentMethod !== 'cod'}
+                    >
+                      Place Order
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+          <div className="w-1/3">
+            <CartSummary onTotalChange={handleTotalChange} onUserIdChange={handleUserIdChange} />
+          </div>
         </div>
-
-        {/* Cart Summary */}
-        <CartSummary cartItems={cartItems} />
       </div>
-    </div>
     </div>
   );
 };

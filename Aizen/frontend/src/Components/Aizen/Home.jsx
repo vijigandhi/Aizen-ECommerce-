@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import Slider from 'react-slick';
 import { useInView } from 'react-intersection-observer';
 import Banner from './Banner';
@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import ProductCard from './ProductCard';
 import Header from '../Header';
 import Footer from '../Footer';
+import Cart from '../cart/cart';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -86,6 +87,12 @@ const HomePage = () => {
       'Fruits': '/aizen/fresh-fruits',
       'Vegetables': '/aizen/fresh-vegetables',
       'Spices': '/aizen/spices',
+      'Dry Fruits': '/aizen/dryfruits',
+      'Meat, Fish & Eggs': '/aizen/meats',
+      'Dairy Products':'/aizen/dairyproducts',
+      'Atta & Rice': '/aizen/rice',
+      'Plant Sapplings': '/aizen/sapplings'
+      
     };
 
     const url = categoryUrlMap[categoryName] || '/aizen';
@@ -108,95 +115,65 @@ const HomePage = () => {
         <Banner images={images} />
       </div>
       <div className="container mx-auto p-4">
+      <Routes>
+            
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
         {/* Top Products Section */}
         <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <h2 className="text-2xl font-bold text-center mb-4">Top Products</h2>
           <Slider
-            dots={false}
-            infinite={true}
-            speed={500}
-            slidesToShow={4}
-            slidesToScroll={1}
-            prevArrow={
-              <div
-                className="slick-prev"
-                style={{
-                  width: '3rem',
-                  height: '3rem',
-                  backgroundColor: '#fff',
-                  color: '#28a745',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  left: '-56px',
-                  position: 'absolute',
-                  zIndex: 10,
-                  top: '50%',
-                  transform: 'translateY(-50%)'
-                }}
-              >
-                {'<'}
-              </div>
-            }
-            nextArrow={
-              <div
-                className="slick-next"
-                style={{
-                  width: '3rem',
-                  height: '3rem',
-                  backgroundColor: '#fff',
-                  color: '#28a745',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  right: '20px',
-                  position: 'absolute',
-                  zIndex: 10,
-                  top: '50%',
-                  transform: 'translateY(-50%)'
-                }}
-              >
-                {'>'}
-              </div>
-            }
-            responsive={[
-              {
-                breakpoint: 1024,
-                settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 1,
-                },
-              },
-              {
-                breakpoint: 600,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                },
-              },
-              {
-                breakpoint: 480,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                },
-              },
-            ]}
-          >
-            {popularProducts.slice(0, 10).map((product) => (
-              <div key={product.id} className="p-2" onClick={() => handleProductClick(product.id)}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </Slider>
+  dots={false}
+  infinite={true}
+  speed={500}
+  slidesToShow={4}
+  slidesToScroll={1}
+  prevArrow={
+    <div
+      className="w-12 h-12 bg-white text-green-500 rounded-full flex items-center justify-center shadow-lg cursor-pointer text-3xl absolute left-[-1.5rem] top-1/2 transform -translate-y-1/2 z-10"
+    >
+      
+    </div>
+  }
+  nextArrow={
+    <div
+      className="w-12 h-12 bg-white text-green-500 rounded-full flex items-center justify-center shadow-lg cursor-pointer text-3xl absolute right-[-1.5rem] top-1/2 transform -translate-y-1/2 z-10"
+    >
+    
+    </div>
+  }
+  responsive={[
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      },
+    },
+  ]}
+>
+  {popularProducts.slice(0, 10).map((product) => (
+    <div key={product.id} className="p-2" onClick={() => handleProductClick(product.id)}>
+      <ProductCard product={product} />
+    </div>
+  ))}
+</Slider>
+
+
         </section>
 
         {/* Categories Section */}
@@ -221,7 +198,7 @@ const HomePage = () => {
         </section>
 
         {/* Products Section */}
-        <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
+        {/* <section className="p-4 mb-4" style={{ boxShadow: 'none', backgroundColor: 'transparent' }}>
           <h2 className="text-2xl font-bold text-center mb-4">Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {visibleProducts.map((product) => (
@@ -235,8 +212,40 @@ const HomePage = () => {
               Loading more products...
             </div>
           )}
-        </section>  
+        </section>   */}
+
+
       </div>
+      <section className="w-full bg-gray-100 lg:px-16 m-0 shadow-none"> {/* Increased padding for larger screens */}
+  <h2 className="text-3xl font-semibold text-gray-800 text-center mb-10">Meet Our Team</h2>
+  <div className="flex flex-wrap gap-6 justify-center">
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/Vignesh Chandran.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Vignesh C</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/portfolio.jpg" alt="Aki" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Akilashwarran Prabaharan</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/Bharath Raj K.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Bharath Raj</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/Asha Kambarajan.png" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Asha K</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+    <div className="w-full  max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
+      <img src="../../src/assets/Vijayalakshmi Gandhi.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
+      <h3 className="text-2xl font-semibold text-gray-800">Vijayalakshmi Gandhi</h3>
+      <p className="text-gray-600">Full-Stack Developer</p>
+    </div>
+  </div>
+</section>
       <Footer />
     </div>
   );
