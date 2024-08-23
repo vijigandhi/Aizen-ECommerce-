@@ -203,7 +203,7 @@ const ViewCart = () => {
                           <span>{product.product_name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 x ${product.special_price}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 x ₹{product.special_price}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center">
                           <button
@@ -223,7 +223,7 @@ const ViewCart = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${(parseFloat(product.special_price) * parseInt(product.quantity)).toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{(parseFloat(product.special_price) * parseInt(product.quantity)).toFixed(2)}</td>
                       <button
                         onClick={() => deleteCartItem(product.cart_item_id)}
                         className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 text-red-600 border border-red-600 rounded-full p-2 transition-opacity duration-200"
@@ -241,25 +241,25 @@ const ViewCart = () => {
                   {/* Subtotal */}
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Subtotal:</span>
-                    <span>${calculateSubtotal()}</span>
+                    <span>₹{calculateSubtotal()}</span>
                   </div>
                   {/* Delivery */}
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Delivery:</span>
-                    <span>${calculateDelivery()}</span>
+                    <span>₹{calculateDelivery()}</span>
                   </div>
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Tax:</span>
-                    <span>$0:00</span>
+                    <span>₹0:00</span>
                   </div>
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Discount:</span>
-                    <span>$0:00</span>
+                    <span>₹0:00</span>
                   </div>
                   {/* Total */}
                   <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-4">
                     <span>Total:</span>
-                    <span>${calculateTotal()}</span>
+                    <span>₹{calculateTotal()}</span>
                   </div>
                 </div>
                 {/* Checkout Button */}

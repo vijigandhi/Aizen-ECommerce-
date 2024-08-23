@@ -13,19 +13,19 @@ const Banner = ({ images }) => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 1500,
-    arrows: false, // Disable arrows
+    arrows: false,
   };
 
   return (
     <div className="w-full h-[60vh] flex justify-center items-center pt-3">
-      <div className="w-full max-w-7xl h-full rounded-lg overflow-hidden"> {/* Increased width, added border radius, removed box shadow */}
+      <div className="w-full max-w-7xl h-full rounded-lg overflow-hidden"> 
         <Slider {...settings} className="w-full h-full">
           {images.map((image, index) => (
             <div key={index} className="w-full h-full">
               <img
                 src={image}
                 alt={`Slide ${index}`}
-                className="w-full h-full object-cover rounded-lg" // Added border radius to images
+                className="w-full h-full object-cover rounded-lg"
               />
             </div>
           ))}

@@ -131,11 +131,11 @@ const CartItem = ({ product, fetchCartItems, userId }) => {
               <a href="#">{product.product_name}</a>
             </h3>
             <p className="ml-4">
-              ${totalPrice}
+            ₹{totalPrice}
             </p>
           </div>
           <p className="mt-1 text-sm text-gray-500">
-            1 x ${product.special_price}
+            1 x ₹{product.special_price}
           </p>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">

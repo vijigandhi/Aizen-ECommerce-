@@ -55,7 +55,7 @@ const HomePage = () => {
 
         setProducts(shuffleArray(productsResponse.data.allProducts || []));
         setPopularProducts(productsResponse.data.popularProducts || []);
-        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10)); // Initial load
+        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10));
       } catch (error) {
         setError('Error fetching data');
         console.error('Error fetching data:', error);
@@ -216,6 +216,7 @@ const HomePage = () => {
 
 
       </div>
+
       <section className="w-full m-0 shadow-none bg-primary-green/10 "> {/* Gradient background for more depth */}
   <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-16 tracking-tight">Meet Our Team</h2> {/* Increased spacing and font weight */}
   <div className="flex flex-wrap gap-8 justify-center">
@@ -225,6 +226,7 @@ const HomePage = () => {
       <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Vignesh C</h3>
       <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
       <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Passionate about coding and problem-solving</div> {/* Added description on hover */}
+
     </div>
     <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group">
       <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
