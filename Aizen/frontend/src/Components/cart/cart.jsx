@@ -132,7 +132,7 @@ const Cart = () => {
                       <div className="px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Subtotal</p>
-                          <p>${calculateSubtotal()}</p>
+                          <p>₹{calculateSubtotal()}</p>
                         </div>
                         <div className="mt-6">
                           <button

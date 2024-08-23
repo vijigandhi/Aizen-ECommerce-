@@ -153,8 +153,8 @@ const ProductDetails = () => {
             <h2 className="text-3xl font-bold text-orange-600">{product.name}</h2>
             <p className="text-gray-600 mt-4">{product.short_description}</p>
             <h5 className="text-lg text-gray-900 mt-4">
-            <span className="line-through text-red-600 mr-2">${product.actual_price ? Number(product.actual_price).toFixed(2) : 'N/A'}</span>
-              Price: ${product.selling_price ? Number(product.selling_price).toFixed(2) : 'N/A'}
+            <span className="line-through text-red-600 mr-2">₹{product.actual_price ? Number(product.actual_price).toFixed(2) : 'N/A'}</span>
+              Price: ₹{product.selling_price ? Number(product.selling_price).toFixed(2) : 'N/A'}
             </h5>
             <p className="text-gray-700 mt-4">{product.description}</p>
             <p className="text-gray-700 mt-4">Quantity: {product.quantity}</p>
@@ -250,7 +250,7 @@ const ProductDetails = () => {
                       <h3 className="text-xl font-semibold text-orange-600">{prod.name}</h3>
                       <p className="text-gray-700 mt-2">{prod.short_description}</p>
                       <div className="mt-4 flex justify-between items-center">
-                        <span className="text-lg font-bold">${prod.selling_price ? Number(prod.selling_price).toFixed(2) : 'N/A'}</span>
+                        <span className="text-lg font-bold">₹{prod.selling_price ? Number(prod.selling_price).toFixed(2) : 'N/A'}</span>
                         <a href={`/product/${prod.id}`} className="text-blue-500 hover:underline">View Details</a>
                       </div>
                     </div>
