@@ -115,46 +115,6 @@ const Cart = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
-
-                      <h2 className="text-lg font-medium text-gray-900" id="slide-over-title">Shopping Cart</h2>
-                      <div className="ml-3 flex h-7 items-center">
-                        <button type="button" className="rounded-md text-gray-400 hover:text-gray-500" onClick={handleClose}>
-                          <span className="sr-only">Close panel</span>
-                          <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div> <br></br>
-                    {error && <div className="text-red-600">{error}</div>}
-                    {products.length === 0 ? (
-                      <p className="mt-6 text-center text-gray-500">Your cart is empty.</p>
-                    ) : (
-                      <ul role="list" className="divide-y divide-gray-200">
-                        {products.map((product) => (
-                          <CartItem key={product.cart_item_id} product={product} fetchCartItems={fetchCartItems} userId={userId} />
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  {products.length > 0 && (
-                    <div className="border-t border-gray-200">
-                      <div className="px-4 py-6 sm:px-6">
-                        <div className="flex justify-between text-base font-medium text-gray-900">
-                          <p>Subtotal</p>
-                          <p>₹{calculateSubtotal()}</p>
-                        </div>
-                        <div className="mt-6">
-                          <button
-                            type="button"
-                            className="w-full rounded-md border border-transparent bg-green-600 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700"
-                            onClick={handleCheckout}
-                          >
-                            Checkout
-                          </button>
-                        </div>
-                      </div>
-
                     </div>
                   </div>
                 </div>
