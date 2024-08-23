@@ -107,7 +107,7 @@ const GoogleSignup = () => {
   return (
     <div className="flex items-center justify-center mt-2 flex-wrap">
       {loading ? (
-        <ThreeDots color="#4CAF50" height={80} width={80} />
+        <ThreeDots color="#4CAF50" height={40} width={80} />
       ) : (
         <GoogleOAuthProvider clientId="995387049773-1l8a7e3q87cp7d38i18lfr09au8027rr.apps.googleusercontent.com">
           <GoogleLogin
