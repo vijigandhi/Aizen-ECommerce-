@@ -17,6 +17,7 @@ import User from './User';
 import Requests from './Requests';
 import Address from './Address';
 import Category from './Category'
+import OrderManager from './Ordermanager';
 
 
 const AdminView = () => {
@@ -69,6 +70,7 @@ const AdminView = () => {
            <Route path="/dashboard" element={<Dashboard />} /> 
             <Route path="/stores" element={<Store />} />
             <Route path="/users/*" element={<User />} /> 
+            <Route path="/orders/*" element={<OrderManager />} />
             <Route path="/requests/*" element={<Requests />} /> 
             <Route path="/address/*" element={<Address />} />
             <Route path="/categories/*" element={<Category />} />
