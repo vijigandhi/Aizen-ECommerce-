@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductCard from './ProductCard'; // Ensure this path is correct
+import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
 const VegetablesList = ({ searchTerm, storeId }) => {
@@ -13,7 +13,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
     threshold: 0.1,
   });
 
-  // Function to shuffle an array
+
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -22,7 +22,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
     return array;
   };
 
-  // Fetch products on component mount
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -31,8 +31,8 @@ const VegetablesList = ({ searchTerm, storeId }) => {
           const vegetableProducts = response.data.allProducts.filter(product => product.category_id === 2);
           const shuffledProducts = shuffleArray(vegetableProducts);
           setProducts(shuffledProducts);
-          setFilteredProducts(shuffledProducts); // Initially set filtered products
-          setVisibleProducts(shuffledProducts.slice(0, 10)); // Load the first 10 products
+          setFilteredProducts(shuffledProducts);
+          setVisibleProducts(shuffledProducts.slice(0, 10));
         } else {
           setError(response.data.error || 'No products found');
         }
@@ -45,26 +45,26 @@ const VegetablesList = ({ searchTerm, storeId }) => {
     fetchProducts();
   }, []);
 
-  // Filter products based on search term and store ID
+
   useEffect(() => {
     const filtered = products.filter(product =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (!storeId || product.store_id === Number(storeId))
     );
     setFilteredProducts(filtered);
-    setVisibleProducts(filtered.slice(0, 10)); // Reset visible products when filters change
+    setVisibleProducts(filtered.slice(0, 10));
   }, [searchTerm, storeId, products]);
 
-  // Lazy load more products when the user scrolls near the bottom
+
   useEffect(() => {
     if (inView && visibleProducts.length < filteredProducts.length) {
-      // Introduce a delay before loading the next batch of products
+
       const loadMoreProducts = setTimeout(() => {
         const nextBatch = filteredProducts.slice(visibleProducts.length, visibleProducts.length + 10);
         setVisibleProducts((prev) => [...prev, ...nextBatch]);
-      }, 1000); // 1 second delay
+      }, 1000);
 
-      return () => clearTimeout(loadMoreProducts); // Clear timeout if component unmounts or re-renders
+      return () => clearTimeout(loadMoreProducts); 
     }
   }, [inView, filteredProducts, visibleProducts.length]);
 
@@ -87,7 +87,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
           />
         ))}
       </div>
-      {visibleProducts.length < filteredProducts.length && (
+      {visiblelProducts.length < filteredProducts.length && (
         <div ref={ref} className="text-center py-4">
           Loading more products...
         </div>

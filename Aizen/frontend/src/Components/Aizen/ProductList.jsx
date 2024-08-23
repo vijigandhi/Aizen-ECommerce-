@@ -5,7 +5,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
-// Utility function to shuffle an array
+
 const shuffleArray = (array) => {
   let shuffled = array.slice();
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -27,7 +27,7 @@ const ProductsList = ({ searchTerm, storeId }) => {
   });
 
   useEffect(() => {
-    // Fetch products from the server
+
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:8000/controller/productDetail.php');
@@ -48,30 +48,30 @@ const ProductsList = ({ searchTerm, storeId }) => {
   }, []);
 
   useEffect(() => {
-    // Filter products based on search term and storeId
+
     const filtered = products.filter(product => {
       const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStoreId = !storeId || product.store_id === Number(storeId);
       return matchesSearchTerm && matchesStoreId;
     });
 
-    // Shuffle the filtered products
+
     const shuffledProducts = shuffleArray(filtered);
 
     setFilteredProducts(shuffledProducts);
-    setVisibleProducts(shuffledProducts.slice(0, 10)); // Initially load only the first 10 products
+    setVisibleProducts(shuffledProducts.slice(0, 10));
   }, [searchTerm, storeId, products]);
 
   useEffect(() => {
-    // Lazy load more products when the user scrolls near the bottom
+
     if (inView && visibleProducts.length < filteredProducts.length) {
-      // Introduce a delay before loading the next batch of products
+
       const loadMoreProducts = setTimeout(() => {
         const nextBatch = filteredProducts.slice(visibleProducts.length, visibleProducts.length + 10);
         setVisibleProducts((prev) => [...prev, ...nextBatch]);
-      }, 1000); // 1 second delay
+      }, 1000);
 
-      return () => clearTimeout(loadMoreProducts); // Clear timeout if component unmounts or re-renders
+      return () => clearTimeout(loadMoreProducts);
     }
   }, [inView, filteredProducts, visibleProducts.length]);
 

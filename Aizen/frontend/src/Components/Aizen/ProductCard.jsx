@@ -110,10 +110,10 @@ const ProductCard = ({ product }) => {
             {product.name}
           </h5>
           <p className="mt-1 mb-2 text-center">
-            <span className="text-sm font-bold text-orange-600">${formattedPrice}</span>
+            <span className="text-sm font-bold text-orange-600">₹{formattedPrice}</span>
             {product.actual_price && (
               <span className="text-xs font-normal text-gray-500 line-through ml-1">
-                ${product.actual_price}
+                ₹{product.actual_price}
               </span>
             )}
           </p>
