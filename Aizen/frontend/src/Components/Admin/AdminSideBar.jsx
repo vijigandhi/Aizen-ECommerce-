@@ -12,6 +12,7 @@ const AdminSideBar = ({ setSelectedMenuTitle }) => {
     { title: 'Dashboard', key: 'dashboard', icon: <FaTachometerAlt /> },
     { title: 'Store Management', key: 'stores', icon: <FaStore /> },
     { title: 'User Management', key: 'users', icon: <FaUsers /> },
+    { title: 'Order Management', key: 'orders', icon: <FaTags />    },
     { title: 'Request Management', key: 'requests', icon: <FaClipboardList /> },
     { title: 'Address Management', key: 'address', icon: <FaMapMarkerAlt />    },
     { title: 'Category Management', key: 'categories', icon: <FaTags />    }
