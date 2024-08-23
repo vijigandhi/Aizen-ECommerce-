@@ -16,7 +16,7 @@ const SapplingsList = ({ searchTerm, storeId }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http:.localhost:8000/controller/productDetail.php');
+        const response = await axios.get('http://localhost:8000/controller/productDetail.php');
         if (response.data && !response.data.error) {
           const spiceProducts = response.data.allProducts.filter(product => product.category_id === 14);
           const shuffledProducts = shuffleArray(spiceProducts);
