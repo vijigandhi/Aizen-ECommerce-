@@ -21,8 +21,8 @@ const DairyProducts = ({ searchTerm, storeId }) => {
           const spiceProducts = response.data.allProducts.filter(product => product.category_id === 12);
           const shuffledProducts = shuffleArray(spiceProducts);
           setProducts(shuffledProducts);
-          setFilteredProducts(shuffledProducts); // Initially set filteredProducts to all spices
-          setVisibleProducts(shuffledProducts.slice(0, 10)); // Initially show only the first 10 products
+          setFilteredProducts(shuffledProducts); 
+          setVisibleProducts(shuffledProducts.slice(0, 10)); 
         } else {
           setError(response.data.error || 'No products found');
         }

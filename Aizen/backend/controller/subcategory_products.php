@@ -18,7 +18,6 @@ try {
         throw new Exception('Database connection failed');
     }
 
-    // Get subcategory ID from query parameters
     $subcategory_id = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : 0;
 
     if ($subcategory_id <= 0) {

@@ -84,7 +84,6 @@ try {
         throw new Exception('Error fetching popular products');
     }
 
-    // Prepare response
     $response = [
         'allProducts' => $allProducts,
         'popularProducts' => $popularProducts

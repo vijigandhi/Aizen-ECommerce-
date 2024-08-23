@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductCard from './ProductCard'; // Ensure this path is correct
+import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
 const FruitsList = ({ searchTerm, storeId }) => {
@@ -18,11 +18,11 @@ const FruitsList = ({ searchTerm, storeId }) => {
       try {
         const response = await axios.get('http://localhost:8000/controller/productDetail.php');
         if (response.data && !response.data.error) {
-          // Filter products with category_id of 1 (Fruits)
+         
           const fruitProducts = response.data.allProducts.filter(product => product.category_id === 1);
           const shuffledProducts = shuffleArray(fruitProducts);
           setProducts(shuffledProducts);
-          setVisibleProducts(shuffledProducts.slice(0, 10)); // Load the first 10 products initially
+          setVisibleProducts(shuffledProducts.slice(0, 10));
         } else {
           setError(response.data.error || 'No products found');
         }
@@ -41,18 +41,18 @@ const FruitsList = ({ searchTerm, storeId }) => {
       (!storeId || product.store_id === Number(storeId))
     );
     setFilteredProducts(filtered);
-    setVisibleProducts(filtered.slice(0, 10)); // Reset visible products when filtering
+    setVisibleProducts(filtered.slice(0, 10)); 
   }, [searchTerm, storeId, products]);
 
   useEffect(() => {
-    // Load more products when user scrolls near the bottom
+
     if (inView && visibleProducts.length < filteredProducts.length) {
       const loadMoreProducts = setTimeout(() => {
         const nextBatch = filteredProducts.slice(visibleProducts.length, visibleProducts.length + 10);
         setVisibleProducts((prev) => [...prev, ...nextBatch]);
-      }, 1000); // 1 second delay to simulate loading
+      }, 1000);
 
-      return () => clearTimeout(loadMoreProducts); // Clear timeout if component unmounts or re-renders
+      return () => clearTimeout(loadMoreProducts); 
     }
   }, [inView, filteredProducts, visibleProducts.length]);
 

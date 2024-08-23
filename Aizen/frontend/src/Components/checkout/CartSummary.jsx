@@ -176,10 +176,10 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
                   <h3>
                     <a href="#">{item.name}</a>
                   </h3>
-                  <p className="ml-4">${item.selling_price}</p>
+                  <p className="ml-4">₹{item.selling_price}</p>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
-                  {item.quantity} x ${item.selling_price}
+                  {item.quantity} x ₹{item.selling_price}
                 </p>
               </div>
               <div className="flex flex-1 items-end justify-between text-sm">
@@ -220,7 +220,7 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
       <p className="text-center">No items in cart.</p>
     )}
     <div className="mt-2 font-semibold text-lg">
-      Total: ${calculateSubtotal()}
+      Total: ₹{calculateSubtotal()}
     </div>
   </div>
   

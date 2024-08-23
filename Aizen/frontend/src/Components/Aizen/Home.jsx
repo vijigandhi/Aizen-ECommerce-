@@ -55,7 +55,7 @@ const HomePage = () => {
 
         setProducts(shuffleArray(productsResponse.data.allProducts || []));
         setPopularProducts(productsResponse.data.popularProducts || []);
-        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10)); // Initial load
+        setVisibleProducts(productsResponse.data.allProducts.slice(0, 10));
       } catch (error) {
         setError('Error fetching data');
         console.error('Error fetching data:', error);
@@ -216,36 +216,50 @@ const HomePage = () => {
 
 
       </div>
-      <section className="w-full bg-gray-100 lg:px-16 m-0 shadow-none"> {/* Increased padding for larger screens */}
-  <h2 className="text-3xl font-semibold text-gray-800 text-center mb-10">Meet Our Team</h2>
-  <div className="flex flex-wrap gap-6 justify-center">
-    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="../../src/assets/Vignesh Chandran.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
-      <h3 className="text-2xl font-semibold text-gray-800">Vignesh C</h3>
-      <p className="text-gray-600">Full-Stack Developer</p>
+
+      <section className="w-full m-0 shadow-none bg-primary-green/10 "> {/* Gradient background for more depth */}
+  <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-16 tracking-tight">Meet Our Team</h2> {/* Increased spacing and font weight */}
+  <div className="flex flex-wrap gap-8 justify-center">
+    <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group"> {/* Enhanced shadow on hover */}
+      <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div> {/* Subtle hover overlay */}
+      <img src="../../src/assets/Vignesh Chandran.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" /> {/* Rotate effect on hover */}
+      <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Vignesh C</h3>
+      <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
+      <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Passionate about coding and problem-solving</div> {/* Added description on hover */}
+
     </div>
-    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="../../src/assets/portfolio.jpg" alt="Aki" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
-      <h3 className="text-2xl font-semibold text-gray-800">Akilashwarran Prabaharan</h3>
-      <p className="text-gray-600">Full-Stack Developer</p>
+    <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group">
+      <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+      <img src="../../src/assets/portfolio.jpg" alt="Aki" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" />
+      <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Akilashwarran Prabaharan</h3>
+      <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
+      <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Creative thinker and developer</div>
     </div>
-    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="../../src/assets/Bharath Raj K.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
-      <h3 className="text-2xl font-semibold text-gray-800">Bharath Raj</h3>
-      <p className="text-gray-600">Full-Stack Developer</p>
+    <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group">
+      <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+      <img src="../../src/assets/Bharath Raj K.jpg" alt="Bharath" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" />
+      <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Bharath Raj</h3>
+      <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
+      <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Expert in modern web technologies</div>
     </div>
-    <div className="w-full max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="../../src/assets/Asha Kambarajan.png" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
-      <h3 className="text-2xl font-semibold text-gray-800">Asha K</h3>
-      <p className="text-gray-600">Full-Stack Developer</p>
+    <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group">
+      <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+      <img src="../../src/assets/Asha Kambarajan.png" alt="Asha" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" />
+      <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Asha K</h3>
+      <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
+      <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Innovative solutions specialist</div>
     </div>
-    <div className="w-full  max-w-xs text-center rounded-lg p-6 transition-transform duration-300 hover:scale-105">
-      <img src="../../src/assets/Vijayalakshmi Gandhi.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-4 mx-auto border-2 border-primary-green" />
-      <h3 className="text-2xl font-semibold text-gray-800">Vijayalakshmi Gandhi</h3>
-      <p className="text-gray-600">Full-Stack Developer</p>
+    <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group">
+      <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+      <img src="../../src/assets/Vijayalakshmi Gandhi.jpg" alt="Viji" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" />
+      <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-primary-green transition-colors duration-300">Vijayalakshmi Gandhi</h3>
+      <p className="text-gray-700 group-hover:text-primary-green transition-colors duration-300">Full-Stack Developer</p>
+      <div className="absolute inset-x-0 bottom-4 text-gray-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Focused on performance and scalability</div>
     </div>
   </div>
 </section>
+
+
       <Footer />
     </div>
   );
