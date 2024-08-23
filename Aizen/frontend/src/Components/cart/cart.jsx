@@ -87,7 +87,7 @@ const Cart = () => {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed z-50 inset-0'>
+     <div className='fixed z-50 inset-0'>
     <div className="fixed inset-0 z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
   
@@ -120,7 +120,7 @@ const Cart = () => {
                 </div>
   
                 {/* Main Content Section */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-10">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-12">
                 <br />
                   {error && <div className="text-red-600">{error}</div>}
                   {products.length === 0 ? (
