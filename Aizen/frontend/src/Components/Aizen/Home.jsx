@@ -219,7 +219,7 @@ const HomePage = () => {
 
       <section className="w-full m-0 shadow-none bg-primary-green/10 "> {/* Gradient background for more depth */}
   <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-16 tracking-tight">Meet Our Team</h2> {/* Increased spacing and font weight */}
-  <div className="flex flex-wrap gap-8 justify-center">
+  <div className="flex flex-wrap gap-14 p-5 justify-center">
     <div className="w-full max-w-xs bg-white text-center rounded-xl p-8 transition-transform duration-300 hover:scale-105 hover:shadow-xl shadow-md relative group"> {/* Enhanced shadow on hover */}
       <div className="absolute inset-0 opacity-0 bg-primary-green/10 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div> {/* Subtle hover overlay */}
       <img src="../../src/assets/Vignesh Chandran.jpg" alt="Vicky" className="w-32 h-32 object-cover rounded-full mb-6 mx-auto border-4 border-primary-green transition-transform duration-300 group-hover:rotate-12" /> {/* Rotate effect on hover */}

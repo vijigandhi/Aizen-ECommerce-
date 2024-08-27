@@ -87,7 +87,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
           />
         ))}
       </div>
-      {visiblelProducts.length < filteredProducts.length && (
+      {visibleProducts.length < filteredProducts.length && (
         <div ref={ref} className="text-center py-4">
           Loading more products...
         </div>
