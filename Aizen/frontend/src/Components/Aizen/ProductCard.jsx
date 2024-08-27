@@ -40,7 +40,7 @@ const ProductCard = ({ product }) => {
 
     if (!customerId) {
 
-      toast.error('User not Loged in. Redirecting to login page.');
+      toast.error('Please log in to add items to your cart.');
       navigate('/login'); 
 
       return;
