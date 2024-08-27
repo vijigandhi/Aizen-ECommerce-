@@ -91,7 +91,10 @@ const HomePage = () => {
       'Meat, Fish & Eggs': '/aizen/meats',
       'Dairy Products':'/aizen/dairyproducts',
       'Atta & Rice': '/aizen/rice',
-      'Plant Sapplings': '/aizen/sapplings'
+      'Plant Sapplings': '/aizen/sapplings',
+      'Dals': '/aizen/dals',
+      'Flowers': '/aizen/flowers',
+      'Oils': '/aizen/oils'
       
     };
 
