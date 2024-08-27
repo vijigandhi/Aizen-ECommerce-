@@ -95,7 +95,7 @@ try {
             <head>
                 <style>
                     body {
-                        font-family: Arial, sans-serif;
+                        font-family: Montserrat, sans-serif;
                         color: #333;
                         line-height: 1.6;
                         margin: 0;
