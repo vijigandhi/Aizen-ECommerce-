@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StateForm = ({ onClose }) => {
   const [stateName, setStateName] = useState('');
   const [countryId, setCountryId] = useState('');
   const [countries, setCountries] = useState([]);
+  const [errors, setErrors] = useState({ stateName: '', countryId: '' });
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -19,16 +22,45 @@ const StateForm = ({ onClose }) => {
     fetchCountries();
   }, []);
 
+  const validateFields = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    if (!stateName.trim()) {
+      newErrors.stateName = 'State name is required.';
+      isValid = false;
+    }
+
+    if (!countryId) {
+      newErrors.countryId = 'Please select a country.';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleChange = (e) => {
-    if (e.target.name === 'stateName') {
-      setStateName(e.target.value);
-    } else {
-      setCountryId(e.target.value);
+    const { name, value } = e.target;
+
+    if (name === 'stateName') {
+      setStateName(value);
+      if (errors.stateName) {
+        setErrors((prevErrors) => ({ ...prevErrors, stateName: '' }));
+      }
+    } else if (name === 'countryId') {
+      setCountryId(value);
+      if (errors.countryId) {
+        setErrors((prevErrors) => ({ ...prevErrors, countryId: '' }));
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateFields()) return;
+
     try {
       const response = await fetch('http://localhost:8000/controller/Admin/addState.php', {
         method: 'POST',
@@ -39,15 +71,17 @@ const StateForm = ({ onClose }) => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('State added successfully!');
+        toast.success('State added successfully!');
         setStateName('');
         setCountryId('');
+        setErrors({});
         onClose(); // Close the form modal after successful submission
       } else {
-        alert('Failed to add state');
+        toast.error('Failed to add state: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -62,7 +96,7 @@ const StateForm = ({ onClose }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-      <form className="max-w-md mx-auto p-4 bg-white  rounded" onSubmit={handleSubmit}>
+      <form className="max-w-md mx-auto p-4 bg-white rounded" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="stateName">
             State Name
@@ -74,8 +108,10 @@ const StateForm = ({ onClose }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={stateName}
             onChange={handleChange}
-            required
           />
+          <span className="block h-6">
+            <p className={`text-red-500 text-sm ${errors.stateName ? '' : 'hidden'}`}>{errors.stateName}</p>
+          </span>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="countryId">
@@ -87,7 +123,6 @@ const StateForm = ({ onClose }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={countryId}
             onChange={handleChange}
-            required
           >
             <option value="">Select a country</option>
             {countries.map((country) => (
@@ -96,16 +131,23 @@ const StateForm = ({ onClose }) => {
               </option>
             ))}
           </select>
+          <span className="block h-6">
+            <p className={`text-red-500 text-sm ${errors.countryId ? '' : 'hidden'}`}>{errors.countryId}</p>
+          </span>
         </div>
         <button
-          type="submit" id='form-btn'
+          type="submit"
+          id="form-btn"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Add State
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 };
 
 export default StateForm;
+
+

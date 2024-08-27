@@ -61,9 +61,6 @@ const Header = ({ onSearch, onStoreChange }) => {
           setUserId(response.data.user.id);
           fetchCartItemCount(response.data.user.id);
 
-          console.log("role : ",response.data.user.role_id);
-          console.log("user : ",response.data.user.id);
-          
           // Set up polling to refresh cart item count periodically
           const intervalId = setInterval(() => {
             fetchCartItemCount(response.data.user.id);
@@ -86,7 +83,6 @@ const Header = ({ onSearch, onStoreChange }) => {
   }, []);
 
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -159,6 +155,7 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   const handleSearchClick = () => {
+   
     onSearch(searchTerm);
   };
 
@@ -178,10 +175,10 @@ const Header = ({ onSearch, onStoreChange }) => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-green-300 to-green-500  shadow-md text-white sticky top-0 left-0 right-0 z-50">
+    <div className="bg-gradient-to-r from-green-300 to-green-500 shadow-md text-white sticky top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center">
-          <img src="../../src/assets/a2-logo.png" alt="Logo" className="h-12 w-auto" onClick={handleHomeClick} />
+          <img src="../../src/assets/a2-logo.png" alt="Logo" className="h-12 w-auto cursor-pointer" onClick={handleHomeClick} />
         </div>
 
         <div className="relative mx-4">
@@ -199,42 +196,44 @@ const Header = ({ onSearch, onStoreChange }) => {
           </select>
         </div>
 
-        <div className="relative mx-4 flex-grow w-80">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-white text-gray-700 p-2 rounded w-full pr-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleSearchKeyPress}
-          />
-          <BiSearch
-            className="absolute right-2 top-2 text-xl text-gray-500 cursor-pointer"
-            onClick={handleSearchClick}
-          />
+        {/* Centered container for search bar */}
+        <div className="flex-1 flex justify-center">
+          <div className="relative w-2/3">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-white text-gray-700 p-2 rounded w-full pr-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+            />
+            <BiSearch
+              className="absolute right-2 top-2 text-xl text-gray-500 cursor-pointer"
+              onClick={handleSearchClick}
+            />
+          </div>
         </div>
 
-        <div className="flex justify-center space-x-4">
-  <div
-    className={`cursor-pointer font-semibold ${getActiveClass('/home')}`}
-    onClick={handleHomeClick}
-  >
-    Home
-  </div>
-  <div
-    className={`cursor-pointer font-semibold ${getActiveClass('/aizen/all-categories')}`}
-    onClick={handleProductClick}
-  >
-    All Products
-  </div>
-  <div
-    className={`cursor-pointer font-semibold ${getActiveClass('/about')}`}
-    onClick={handleAboutClick}
-  >
-    About
-  </div>
-</div>
-
+        <div className="flex items-center space-x-4">
+          <div
+            className={`cursor-pointer font-semibold ${getActiveClass('/home')}`}
+            onClick={handleHomeClick}
+          >
+            Home
+          </div>
+          <div
+            className={`cursor-pointer font-semibold ${getActiveClass('/aizen/all-categories')}`}
+            onClick={handleProductClick}
+          >
+            All Products
+          </div>
+          <div
+            className={`cursor-pointer font-semibold ${getActiveClass('/about')}`}
+            onClick={handleAboutClick}
+          >
+            About
+          </div>
+        </div>
 
         <div className="relative mx-4">
           <FaCartPlus className="text-2xl text-green-900 hover:text-white cursor-pointer" onClick={handleCartClick} />

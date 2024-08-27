@@ -15,6 +15,7 @@ const Userlist = () => {
       try {
         const response = await axios.get('http://localhost:8000/controller/Admin/User/getUsers.php'); // Update the path accordingly
         setUsers(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error("There was an error fetching the users!", error);
       }
@@ -30,9 +31,12 @@ const Userlist = () => {
     }
     setSortConfig({ key, direction });
   };
+
   const handleViewClick = (user) => {
-    setSelectedUser(user.id);
+    setSelectedUser(user);  // Set the entire user object
+    console.log(user.id)
   };
+
   const handleCloseModal = () => {
     setSelectedUser(null);
   };
@@ -76,7 +80,6 @@ const Userlist = () => {
 
   return (
     <div className='p-6 bg-gray-50 min-h-screen'>
-      {/* <h1 className="text-3xl font-bold text-green-900 mb-6">User List</h1> */}
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
@@ -133,7 +136,7 @@ const Userlist = () => {
                 <td className="py-3 px-6">{user.name}</td>
                 <td className="py-3 px-6">{user.email}</td>
                 <td className="py-3 px-6 text-center">
-                <button
+                  <button
                     className="text-blue-500 hover:text-blue-700"
                     onClick={() => handleViewClick(user)}
                   >
@@ -162,39 +165,39 @@ const Userlist = () => {
           ))}
         </div>
       </div>
-      
-      
+
       {selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-        <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">User Details</h2>
-          <div className="mb-4">
-            <p className="text-lg text-gray-700">
-              <strong>ID:</strong> {selectedUser.id}
-            </p>
+          <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">User Details</h2>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>ID:</strong> {selectedUser.id}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>Name:</strong> {selectedUser.name}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>Status:</strong> User
+              </p>
+            </div>
+
+            <button
+              onClick={handleCloseModal}
+              className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
+            >
+              Close
+            </button>
           </div>
-          <div className="mb-4">
-            <p className="text-lg text-gray-700">
-              <strong>Name:</strong> {selectedUser.name}
-            </p>
-          </div>
-          <div className="mb-4">
-            <p className="text-lg text-gray-700">
-              <strong>Status:</strong> {selectedUser.role_id === '3' ? 'User' : 'User'}
-            </p>
-          </div>
-         
-          <button
-            onClick={handleCloseModal}
-            className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
-          >
-            Close
-          </button>
         </div>
-      </div>
       )}
     </div>
   );
 }
 
 export default Userlist;
+

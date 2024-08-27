@@ -43,6 +43,21 @@ export const adminMenu = [
       title: 'Plant Sapplings', 
       key: 'sapplings',
       
-    }
+    },
+    {
+      title: 'Dals', 
+      key: 'dals',
+      
+    },
+    {
+      title: 'Flowers', 
+      key: 'flowers',
+      
+    },
+    {
+      title: 'Oils', 
+      key: 'oils',
+      
+    },
   ];
   
