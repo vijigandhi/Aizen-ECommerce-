@@ -120,9 +120,9 @@ const Cart = () => {
                 </div>
   
                 {/* Main Content Section */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-12">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-14">
                 <br />
-                  {error && <div className="text-red-600">{error}</div>}
+
                   {products.length === 0 ? (
                     <p className="mt-6 text-center text-gray-500">Your cart is empty.</p>
                   ) : (

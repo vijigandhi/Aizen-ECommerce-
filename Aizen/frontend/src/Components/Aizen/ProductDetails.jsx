@@ -74,10 +74,10 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     if (!product || product.quantity === 0 ) {
-      return
-    };
+      return;
+    }
     if (!customerId) {
-      toast.error('User not Loged in. Redirecting to login page.');
+      toast.error('User not logged in. Redirecting to login page.');
       navigate('/login'); 
       return;
     }
@@ -210,59 +210,81 @@ const ProductDetails = () => {
                 Please select a quantity.
               </p>
             </form>
-
-            <div className="mt-6 flex gap-4">
-              {product.quantity > 0 ? (
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-                >
-                  Add to Cart
-                </button>
-              ) : (
-                <button
-                  className="bg-gray-500 text-white px-6 py-2 rounded cursor-not-allowed"
-                  disabled
-                >
-                  Not Avaiable
-                </button>
-              )}
+            <div className="mt-8">
+              <button
+                onClick={handleAddToCart}
+                disabled={product.quantity === 0}
+                className={`px-6 py-3 w-full sm:w-auto font-semibold rounded-lg shadow-md focus:outline-none transition duration-300 ease-in-out ${
+                  product.quantity === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600'
+                }`}
+              >
+                Add to Cart
+              </button>
+              <ToastContainer />
             </div>
           </div>
         </div>
-
-        {subcategoryProducts.length > 0 && (
-          <div className="p-10 bg-white border-t border-gray-200">
-            <h2 className="text-2xl font-bold mb-4">More Products from this Subcategory</h2>
-            <div className="flex flex-wrap -m-2">
-              {subcategoryProducts.map(prod => (
-                <div 
-                  key={prod.id} 
-                  className="w-full sm:w-1/2 lg:w-1/4 p-2"
-                >
-                  <div className="bg-white border rounded-lg overflow-hidden shadow-lg">
-                    <img
-                      src={`http://localhost:8000/assets/images/${prod.images}`}
-                      alt={prod.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="text-xl font-semibold text-orange-600">{prod.name}</h3>
-                      <p className="text-gray-700 mt-2">{prod.short_description}</p>
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-lg font-bold">₹{prod.selling_price ? Number(prod.selling_price).toFixed(2) : 'N/A'}</span>
-                        <a href={`/product/${prod.id}`} className="text-blue-500 hover:underline">View Details</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+
+      {subcategoryProducts.length > 0 && (
+        <div className="bg-white py-12">
+          <h2 className="text-2xl font-semibold mb-8 text-center">Other Products You May Like</h2>
+          <div className="flex flex-wrap justify-center gap-6 px-6">
+            {subcategoryProducts.map((prod) => (
+              <div
+              key={prod.id}
+              className="relative flex flex-col max-w-xs p-4 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
+            >
+              {prod.discount > 0 && (
+                <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                  {prod.discount}% Off
+                </span>
+              )}
+              <img
+                src={`http://localhost:8000/assets/images/${prod.images}`}
+                alt={prod.name}
+                className="w-full h-48 object-cover rounded-lg"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'http://localhost:8000/assets/images/defaultImage.jpeg';
+                }}
+              />
+              {prod.quantity === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-lg font-bold rounded-lg">
+                  Out of Stock
+                </div>
+              )}
+              <div className="flex flex-col flex-grow">
+                <h3 className="text-lg font-semibold text-gray-800 truncate">{prod.name}</h3>
+                <p className="mt-2 text-gray-600">
+                  {prod.description.length > 100 ? prod.description.slice(0, 70) + '...' : prod.description}
+                </p>
+                <div className="mt-auto flex justify-between items-center">
+                  <p className="text-gray-900 font-semibold">
+                    ₹{prod.selling_price ? Number(prod.selling_price).toFixed(2) : 'N/A'}
+                  </p>
+                  <button
+                    className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                      prod.quantity === 0
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600'
+                    }`}
+                    disabled={prod.quantity === 0}
+                    onClick={() => navigate(`/product/${prod.id}`)}
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>            
+            ))}
+          </div>
+        </div>
+      )}
+
       <Footer />
-      <ToastContainer />
     </div>
   );
 };
