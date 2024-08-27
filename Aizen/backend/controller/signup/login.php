@@ -41,6 +41,7 @@ if ($email && $password) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['name'] = $user['name'];
                 $_SESSION['email'] = $user['email'];
+                $_SESSION['role_id'] = $user['role_id'];
                 // JWT Header
                 $header = [
                     'alg' => 'HS256',
@@ -61,6 +62,11 @@ if ($email && $password) {
                 $response['status'] = 'success';
                 $response['message'] = 'Login successful';
                 $response['token'] = $token;
+                $response['id'] = $user['id']; // Include user ID in the response
+                $response['role_id'] = $user['role_id'];
+                echo json_encode($response);
+                exit;
+                
             } else {
                 $response['status'] = 'error';
                 $response['message'] = 'Invalid password';

@@ -3,6 +3,7 @@ import axios from 'axios';
 import CartSummary from './CartSummary';
 import Header from '../Header';
 import Swal from 'sweetalert2';
+import { TailSpin } from 'react-loader-spinner'; 
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -131,7 +132,7 @@ const Checkout = () => {
           icon: 'success',
           title: 'Order Confirmed!',
           text: 'Thank you for your purchase. Redirecting to home...',
-          timer: 2000,
+          timer: 1000,
           showConfirmButton: false,
         });
 
@@ -188,9 +189,9 @@ const Checkout = () => {
       <div className="min-h-screen bg-gray-100 py-10 px-2 sm:px-3 lg:px-4">
         <div className="max-w-7xl mx-auto flex gap-4">
           <div className="flex-1 bg-white shadow-md rounded-lg p-4">
-            {loading && (
+          {loading && (
               <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-                <div className="text-white text-xl">Loading...</div>
+                <TailSpin color="white" height={100} width={100} />
               </div>
             )}
             {currentStep === 1 && (

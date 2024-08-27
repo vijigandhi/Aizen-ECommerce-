@@ -115,6 +115,9 @@ const Header = ({ onSearch, onStoreChange }) => {
   const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
+  const handleOrderDetails = () => {
+    navigate('/OrderDetails');
+  };
 
   const handleViewProfile = () => {
     navigate('/profile');
@@ -251,6 +254,9 @@ const Header = ({ onSearch, onStoreChange }) => {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2">
                 <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200" onClick={handleViewProfile}>
                   View Profile
+                </a>
+                <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200" onClick={handleOrderDetails}>
+                  Your Orders
                 </a>
 
                 {roleId === 1 && (
