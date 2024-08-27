@@ -35,6 +35,9 @@ const OrderManager = () => {
   };
 
   const handleSaveEdit = async () => {
+    console.log('Saving order with ID:', editingOrder.id);
+    console.log('New status:', editingOrder.Status);
+  
     try {
       const response = await axios.post('http://localhost:8000/controller/Admin/manageOrders.php', {
         order_id: editingOrder.id,
@@ -44,7 +47,7 @@ const OrderManager = () => {
           'Content-Type': 'application/json'
         }
       });
-
+  
       if (response.data.success) {
         setOrders(prevOrders =>
           prevOrders.map(order =>
@@ -59,6 +62,7 @@ const OrderManager = () => {
       console.error('Error updating order:', error);
     }
   };
+  
 
   const handleDeleteOrder = async () => {
     if (window.confirm('Are you sure you want to delete this order?')) {
@@ -226,12 +230,7 @@ const OrderManager = () => {
             <p><strong>Order ID:</strong> {selectedOrder.id}</p>
             <p><strong>Shipping Name:</strong> {selectedOrder.shipping_name}</p>
             <p><strong>Status:</strong> {selectedOrder.Status}</p>
-            <button
-              onClick={handleCloseModal}
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-            >
-              Close
-            </button>
+            <button onClick={handleCloseModal} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Close</button>
           </div>
         </div>
       }
@@ -240,55 +239,23 @@ const OrderManager = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2">
             <h3 className="text-2xl font-semibold mb-4">Edit Order</h3>
-            <div className="mb-4">
-              <label className="block text-gray-700">Order ID:</label>
-              <input
-                type="text"
-                value={editingOrder.id}
-                readOnly
-                className="p-2 border border-gray-300 rounded w-full"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Shipping Name:</label>
-              <input
-                type="text"
-                value={editingOrder.shipping_name}
-                readOnly
-                className="p-2 border border-gray-300 rounded w-full"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Status:</label>
-              <select
-                value={editingOrder.Status}
-                onChange={(e) => setEditingOrder({ ...editingOrder, Status: e.target.value })}
-                className="p-2 border border-gray-300 rounded w-full"
-              >
-                <option value="Order Placed">Order Placed</option>
-                <option value="Out for Delivery">Out for Delivery</option>
-                <option value="Delivered">Delivered</option>
-              </select>
-            </div>
-            <div className="flex justify-between">
-              <button
-                onClick={handleSaveEdit}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={handleCancelEdit}
-                className="bg-gray-500 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteOrder}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Delete
-              </button>
+            <p><strong>Order ID:</strong> {editingOrder.id}</p>
+            <p><strong>Shipping Name:</strong> {editingOrder.shipping_name}</p>
+            <label htmlFor="status" className="block text-gray-700">Status:</label>
+            <select
+              id="status"
+              value={editingOrder.Status}
+              onChange={(e) => setEditingOrder({ ...editingOrder, Status: e.target.value })}
+              className="border border-gray-300 rounded p-2 w-full"
+            >
+              <option value="Order Placed">Order Placed</option>
+              <option value="Out for Delivery">Out for Delivery</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+            <div className="flex justify-between mt-4">
+              <button onClick={handleSaveEdit} className="bg-green-600 text-white px-4 py-2 rounded">Save</button>
+              <button onClick={handleDeleteOrder} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
+              <button onClick={handleCancelEdit} className="bg-blue-600 text-white px-4 py-2 rounded">Cancel</button>
             </div>
           </div>
         </div>
@@ -298,4 +265,5 @@ const OrderManager = () => {
 };
 
 export default OrderManager;
+
 

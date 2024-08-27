@@ -2,13 +2,28 @@ import React, { useState } from 'react';
 
 const CountryForm = ({ onClose }) => {
   const [countryName, setCountryName] = useState('');
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setCountryName(e.target.value);
+    if (error) {
+      setError(''); // Clear the error when the user starts typing
+    }
+  };
+
+  const validateField = () => {
+    if (!countryName.trim()) {
+      setError('Country name is required.');
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateField()) return;
+
     try {
       const response = await fetch('http://localhost:8000/controller/Admin/addCountry.php', {
         method: 'POST',
@@ -23,7 +38,7 @@ const CountryForm = ({ onClose }) => {
         setCountryName(''); // Clear the input field
         onClose(); // Close the form
       } else {
-        alert('Failed to add country');
+        alert('Failed to add country: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -41,7 +56,7 @@ const CountryForm = ({ onClose }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-      <form className="max-w-md mx-auto p-4 bg-white  rounded" onSubmit={handleSubmit}>
+      <form className="max-w-md mx-auto p-4 bg-white rounded" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
             Country Name
@@ -53,12 +68,14 @@ const CountryForm = ({ onClose }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={countryName}
             onChange={handleChange}
-            required
           />
+          <span className="block h-6">
+            <p className={`text-red-500 text-sm ${error ? '' : 'hidden'}`}>{error}</p>
+          </span>
         </div>
         <button
           type="submit"
-          id='form-btn'
+          id="form-btn"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Add Country

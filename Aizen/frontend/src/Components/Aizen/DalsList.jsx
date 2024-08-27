@@ -3,7 +3,7 @@ import axios from 'axios';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
-const VegetablesList = ({ searchTerm, storeId }) => {
+const DalsList = ({ searchTerm, storeId }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState([]);
@@ -28,7 +28,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
       try {
         const response = await axios.get('http://localhost:8000/controller/productDetail.php');
         if (response.data && !response.data.error) {
-          const vegetableProducts = response.data.allProducts.filter(product => product.category_id === 2);
+          const vegetableProducts = response.data.allProducts.filter(product => product.category_id === 15);
           const shuffledProducts = shuffleArray(vegetableProducts);
           setProducts(shuffledProducts);
           setFilteredProducts(shuffledProducts);
@@ -78,7 +78,7 @@ const VegetablesList = ({ searchTerm, storeId }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold py-2">Fresh Vegetables</h2>
+      <h2 className="text-xl font-bold py-2">Fresh Dals</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-6 ml-1">
         {visibleProducts.map((product) => (
           <ProductCard
@@ -96,4 +96,4 @@ const VegetablesList = ({ searchTerm, storeId }) => {
   );
 };
 
-export default VegetablesList;
+export default DalsList;

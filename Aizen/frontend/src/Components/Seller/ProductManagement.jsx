@@ -12,7 +12,7 @@ const ProductManagement = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductForm, setShowProductForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(5); // Default entries per page
+  const [productsPerPage, setProductsPerPage] = useState(10); // Default entries per page
   const [loading, setLoading] = useState(true); // Loading state
   const [userId, setUserId] = useState(null); // State to store user ID
   const [isAdmin, setIsAdmin] = useState(false); // State to check if user is an admin
@@ -108,17 +108,46 @@ const ProductManagement = () => {
     setCurrentPage(1); // Reset to first page when entries per page change
   };
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredProducts.length / productsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+  const getPaginationRange = () => {
+    const range = [];
+    let startPage, endPage;
+
+    if (totalPages <= 3) {
+      // If total pages are less than or equal to 3, show all pages
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      // Determine start and end page for the range
+      startPage = Math.max(1, currentPage - 1);
+      endPage = Math.min(totalPages, currentPage + 1);
+
+      if (currentPage > 2) {
+        range.push('...');
+      }
+
+      if (startPage > 1) {
+        range.push(1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        range.push(i);
+      }
+
+      if (endPage < totalPages) {
+        range.push('...');
+      }
+
+      if (endPage < totalPages) {
+        range.push(totalPages);
+      }
     }
-    return null;
+
+    return range;
   };
+
+  const paginationRange = getPaginationRange();
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
@@ -171,13 +200,13 @@ const ProductManagement = () => {
                   className="py-3 px-6 text-left cursor-pointer"
                   onClick={() => handleSort('id')}
                 >
-                  Product ID {getSortIcon('id')}
+                  Product ID 
                 </th>
                 <th
                   className="py-3 px-6 text-left cursor-pointer"
                   onClick={() => handleSort('name')}
                 >
-                  Name {getSortIcon('name')}
+                  Name 
                 </th>
                 <th className="py-3 px-6 text-center">Actions</th>
               </tr>
@@ -196,8 +225,8 @@ const ProductManagement = () => {
                         <FaEye />
                       </button>
                       <button
-                        className="text-green-500 hover:text-green-700"
-                      >
+                        className="text-green-500 hover:text-green-700">
+                     
                         <FaEdit />
                       </button>
                     </td>
@@ -217,16 +246,34 @@ const ProductManagement = () => {
         <div>
           Showing {indexOfFirstProduct + 1} to {indexOfLastProduct > filteredProducts.length ? filteredProducts.length : indexOfLastProduct} of {filteredProducts.length} entries
         </div>
-        <div className="flex space-x-1">
-          {pageNumbers.map(number => (
-            <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={`py-1 px-3 rounded ${currentPage === number ? 'bg-green-900 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-700 hover:text-white`}
-            >
-              {number}
-            </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            &lt;
+          </button>
+          {paginationRange.map((page, index) => (
+            page === '...' ? (
+              <span key={index} className="px-3 py-1 text-gray-700">...</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => paginate(page)}
+                className={`py-1 px-3 rounded ${currentPage === page ? 'bg-green-900 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-700 hover:text-white`}
+              >
+                {page}
+              </button>
+            )
           ))}
+          <button
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            &gt;
+          </button>
         </div>
       </div>
 
@@ -252,4 +299,5 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
+
 

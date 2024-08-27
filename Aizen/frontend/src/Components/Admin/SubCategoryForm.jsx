@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SubCategoryForm = ({ onClose }) => {
   const [subCategoryName, setSubCategoryName] = useState('');
@@ -10,9 +12,14 @@ const SubCategoryForm = ({ onClose }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await fetch('http://localhost:8000/controller/Admin/getCategories.php');
-      const data = await response.json();
-      setCategories(data);
+      try {
+        const response = await fetch('http://localhost:8000/controller/Admin/getCategories.php');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to fetch categories');
+      }
     };
 
     fetchCategories();
@@ -61,26 +68,26 @@ const SubCategoryForm = ({ onClose }) => {
         method: 'POST',
         body: formData,
       });
-      
+
       const result = await response.json();
       if (result.success) {
-        alert('Subcategory added successfully!');
+        toast.success('Subcategory added successfully!');
         setSubCategoryName('');
         setDescription('');
         setCategoryId('');
         setImage(null);
         onClose();
       } else {
-        alert('Failed to add subcategory: ' + result.message);
+        toast.error('Failed to add subcategory: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
   // Error clearing logic for each input
   const handleInputChange = (field, value) => {
-    // Update the respective field value
     if (field === 'subCategoryName') {
       setSubCategoryName(value);
     } else if (field === 'description') {
@@ -110,11 +117,7 @@ const SubCategoryForm = ({ onClose }) => {
           </svg>
         </button>
         <h2 className="text-xl font-bold mb-4">Add New Subcategory</h2>
-        <form
-          className="max-w-md mx-auto p-4 overflow-y-auto"
-          onSubmit={handleSubmit}
-          style={{ height: '400px' }}
-        >
+        <form className="max-w-md mx-auto p-4" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subCategoryName">
               Subcategory Name
@@ -126,9 +129,11 @@ const SubCategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('subCategoryName', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.subCategoryName && (
-              <p className="text-red-500 text-xs mt-1">{errors.subCategoryName}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.subCategoryName ? '' : 'hidden'}`}>
+                {errors.subCategoryName}
+              </p>
+            </span>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
@@ -140,9 +145,11 @@ const SubCategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('description', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.description && (
-              <p className="text-red-500 text-xs mt-1">{errors.description}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.description ? '' : 'hidden'}`}>
+                {errors.description}
+              </p>
+            </span>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category_id">
@@ -155,15 +162,18 @@ const SubCategoryForm = ({ onClose }) => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
               <option value="">Select a category</option>
-              {Array.isArray(categories) && categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
+              {Array.isArray(categories) &&
+                categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
             </select>
-            {errors.categoryId && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.categoryId ? '' : 'hidden'}`}>
+                {errors.categoryId}
+              </p>
+            </span>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
@@ -175,9 +185,11 @@ const SubCategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('image', e.target.files[0])}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.image && (
-              <p className="text-red-500 text-xs mt-1">{errors.image}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.image ? '' : 'hidden'}`}>
+                {errors.image}
+              </p>
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <button
@@ -188,9 +200,11 @@ const SubCategoryForm = ({ onClose }) => {
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );
 };
 
 export default SubCategoryForm;
+
