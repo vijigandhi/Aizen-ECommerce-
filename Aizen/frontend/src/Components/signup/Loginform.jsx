@@ -14,7 +14,6 @@ const LoginForm = () => {
     password: '',
   });
   const [errors, setErrors] = useState({});
-  const [errorMsg, setErrorMsg] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -67,9 +66,6 @@ const LoginForm = () => {
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      setTimeout(() => {
-        setErrors({});
-      }, 3000);
     } else {
       try {
         const response = await axios.post(
@@ -83,16 +79,30 @@ const LoginForm = () => {
         );
 
         if (response.data.status === 'success') {
+          console.log('Role ID:', response.data.role_id);
           toast.success('Login successful!');
-          setErrorMsg('');
+          setErrors({});
           setFormData({
             email: '',
             password: '',
           });
+
+          // Store token and user details
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('id', response.data.id);
+          localStorage.setItem('role_id', response.data.role_id); // assuming role_id is returned
 
-          navigate('/home');
+          // Check the role ID and navigate accordingly
+          if (response.data.role_id === 3) {
+            navigate('/home');
+          } else if (response.data.role_id === 1) {
+            navigate('/aizen-admin/dashboard');
+          } else if (response.data.role_id === 2) {
+            navigate('/aizen-seller/dashboard');
+          } else {
+            toast.error('Unauthorized role');
+          }
+
         } else {
           // Display the backend error message under the password field
           setErrors({ password: response.data.message || 'Login failed. Please check your credentials.' });
@@ -120,7 +130,7 @@ const LoginForm = () => {
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5 relative">
               <div className="relative">
                 <input
-                  className="w-full px-3 py-2 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                  className={`w-full px-3 py-2 rounded-lg font-medium bg-gray-100 border ${errors.email ? 'border-red-500' : 'border-gray-200'} placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white`}
                   type="email"
                   id="email"
                   value={formData.email}
@@ -131,7 +141,7 @@ const LoginForm = () => {
               </div>
               <div className="relative">
                 <input
-                  className="w-full px-3 py-2 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                  className={`w-full px-3 py-2 rounded-lg font-medium bg-gray-100 border ${errors.password ? 'border-red-500' : 'border-gray-200'} placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white`}
                   type={showPassword ? "text" : "password"}
                   id="password"
                   value={formData.password}
