@@ -8,6 +8,7 @@ const Sellerlist = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
   const [sellersPerPage, setSellersPerPage] = useState(5); // Default entries per page
+  const [selectedSeller, setSelectedSeller] = useState(null); // State to manage selected seller
 
   useEffect(() => {
     const fetchSellers = async () => {
@@ -53,6 +54,14 @@ const Sellerlist = () => {
   const handleSellersPerPageChange = (event) => {
     setSellersPerPage(Number(event.target.value));
     setCurrentPage(1); // Reset to first page when entries per page change
+  };
+
+  const handleViewClick = (seller) => {
+    setSelectedSeller(seller); // Set selected seller
+  };
+
+  const handleCloseModal = () => {
+    setSelectedSeller(null); // Close the modal by setting selected seller to null
   };
 
   const pageNumbers = [];
@@ -126,12 +135,12 @@ const Sellerlist = () => {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{seller.name}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{seller.email}</td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => handleViewClick(seller.id)}
-                  >
-                    <FaEye />
-                  </button>
+                <button
+                  className="text-blue-500 hover:text-blue-700"
+                  onClick={() => handleViewClick(seller)}
+                >
+                  <FaEye />
+                </button>
               </td>
             </tr>
           ))}
@@ -154,8 +163,43 @@ const Sellerlist = () => {
           ))}
         </div>
       </div>
+
+      {/* Modal for Seller Details */}
+      {selectedSeller && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+          <div className="bg-white p-8 w-full max-w-lg rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Seller Details</h2>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>ID:</strong> {selectedSeller.id}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>Name:</strong> {selectedSeller.name}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>Email:</strong> {selectedSeller.email}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-lg text-gray-700">
+                <strong>Status:</strong> Seller
+              </p>
+            </div>
+            <button
+              onClick={handleCloseModal}
+              className="mt-6 bg-gray-600 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default Sellerlist;

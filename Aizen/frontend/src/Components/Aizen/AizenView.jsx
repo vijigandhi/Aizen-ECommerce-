@@ -18,6 +18,9 @@ import AttaAndRiceList from './AttaAndRiceList';
 import DairyProducts from './DairyProducts';
 import SapplingsList from './SapplingsList';
 import DryfruitsList from './DryfruitsList';
+import DalsList from './DalsList';
+import FlowersList from './FlowersList';
+import OilsList from './OilsList';
 
 const AizenView = () => {
 
@@ -56,6 +59,9 @@ const AizenView = () => {
             <Route path="/dairyproducts/*" element={<DairyProducts searchTerm={searchTerm} storeId={storeId} />} />
             <Route path="/rice/*" element={<AttaAndRiceList searchTerm={searchTerm} storeId={storeId} />} />
             <Route path="/sapplings/*" element={<SapplingsList searchTerm={searchTerm} storeId={storeId} />} />
+            <Route path="/dals/*" element={<DalsList searchTerm={searchTerm} storeId={storeId} />} />
+          <Route path="/flowers/*" element={<FlowersList searchTerm={searchTerm} storeId={storeId} />} />
+          <Route path="/oils/*" element={<OilsList searchTerm={searchTerm} storeId={storeId} />} />
           
           </Routes>
         </div>

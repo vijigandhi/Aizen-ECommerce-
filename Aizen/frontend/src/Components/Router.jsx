@@ -17,9 +17,12 @@ import Cart from "./cart/cart";
 import Checkout from "./checkout/checkout"
 import CartItem from "./cart/cartitem";
 import Homepage from "./Aizen/Home";
-
+import OrderDetails from "./checkout/orderDetails";
 import ViewCart from "./cart/viewcart";
 import AboutUs from "./AboutUs";
+import DalsList from "./Aizen/DalsList";
+import FlowersList from "./Aizen/FlowersList";
+import OilsList from "./Aizen/OilsList";
 
 const RouterComponent = () => {
   return (
@@ -43,6 +46,9 @@ const RouterComponent = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/viewcart" element={<ViewCart />} />
+
+          <Route path="/OrderDetails" element={<OrderDetails />} />
+
         </Routes>
       </div>
     </Router>
