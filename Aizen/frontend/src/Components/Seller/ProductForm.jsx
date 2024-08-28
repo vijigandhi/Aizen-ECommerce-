@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Import toast from react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for toastify
+
+// Initialize toast notifications
+toast.configure();
 
 const ProductForm = ({ onClose }) => {
   const [categories, setCategories] = useState([]);
@@ -18,6 +23,7 @@ const ProductForm = ({ onClose }) => {
     store_id: '',
     image: null,
   });
+  const [errors, setErrors] = useState({});
   const [sellerId, setSellerId] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -89,14 +95,40 @@ const ProductForm = ({ onClose }) => {
       }
       return newFormData;
     });
+    // Clear error for the changed field
+    setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
 
   const handleFileChange = (e) => {
     setFormData({ ...formData, image: e.target.files[0] });
+    setErrors(prevErrors => ({ ...prevErrors, image: '' }));
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    // Validation rules
+    if (!formData.name.trim()) errors.name = 'Product name is required';
+    if (!formData.short_description.trim()) errors.short_description = 'Short description is required';
+    if (!formData.description.trim()) errors.description = 'Description is required';
+    if (!formData.actual_price || formData.actual_price <= 0) errors.actual_price = 'Actual price must be greater than zero';
+    if (!formData.selling_price || formData.selling_price <= 0) errors.selling_price = 'Selling price must be greater than zero';
+    if (!formData.quantity || formData.quantity <= 0) errors.quantity = 'Quantity must be greater than zero';
+    if (!formData.unit.trim()) errors.unit = 'Unit is required';
+    if (!formData.category_id) errors.category_id = 'Category is required';
+    if (!formData.subcategory_id) errors.subcategory_id = 'Subcategory is required';
+    if (!formData.store_id) errors.store_id = 'Store is required';
+    if (!formData.image) errors.image = 'Product image is required';
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     setLoading(true);
 
     const formDataToSubmit = new FormData();
@@ -106,36 +138,39 @@ const ProductForm = ({ onClose }) => {
     formDataToSubmit.append('seller_id', sellerId);
 
     try {
-      console.log('Submitting form data:', formDataToSubmit); // Debugging
       const response = await axios.post('http://localhost:8000/controller/Admin/addProduct.php', formDataToSubmit, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      console.log('Response:', response.data); // Debugging
-      setFormData({
-        name: '',
-        short_description: '',
-        description: '',
-        actual_price: '',
-        selling_price: '',
-        quantity: '',
-        unit: '',
-        category_id: '',
-        subcategory_id: '',
-        store_id: '',
-        image: null,
-      });
-      setSubcategories([]);
-      onClose(); // Close the form after successful submission
+      if (response.data.success) {
+        setFormData({
+          name: '',
+          short_description: '',
+          description: '',
+          actual_price: '',
+          selling_price: '',
+          quantity: '',
+          unit: '',
+          category_id: '',
+          subcategory_id: '',
+          store_id: '',
+          image: null,
+        });
+        setSubcategories([]);
+        toast.success('Product added successfully!'); // Use toastify for success
+        onClose(); // Close the form after successful submission
+      } else {
+        toast.error('Failed to add product: ' + response.data.message); // Use toastify for error
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
-      // Optionally, show user-friendly error message here
+      toast.error('An error occurred. Please try again.'); // Use toastify for error
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center custom-scrollbar justify-center z-50">
       <div className="relative bg-white shadow-lg rounded-lg w-full max-w-3xl p-6">
         <button
           onClick={onClose}
@@ -146,12 +181,11 @@ const ProductForm = ({ onClose }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 custom-scrollbar">
           {loading && <p className="text-blue-500 mb-4">Loading...</p>}
           <h2 className="text-xl font-bold mb-4">Add New Product</h2>
           <div className="max-h-96 overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              {/* Form fields */}
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
                 <input
@@ -159,9 +193,11 @@ const ProductForm = ({ onClose }) => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Short Description:</label>
@@ -172,6 +208,9 @@ const ProductForm = ({ onClose }) => {
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.short_description && <p className="text-red-500 text-xs mt-1">{errors.short_description}</p>}
+                </span>
               </div>
               <div className="col-span-2">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
@@ -181,6 +220,9 @@ const ProductForm = ({ onClose }) => {
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Actual Price:</label>
@@ -190,9 +232,11 @@ const ProductForm = ({ onClose }) => {
                   name="actual_price"
                   value={formData.actual_price}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.actual_price && <p className="text-red-500 text-xs mt-1">{errors.actual_price}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Selling Price:</label>
@@ -202,9 +246,11 @@ const ProductForm = ({ onClose }) => {
                   name="selling_price"
                   value={formData.selling_price}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.selling_price && <p className="text-red-500 text-xs mt-1">{errors.selling_price}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Quantity:</label>
@@ -213,9 +259,11 @@ const ProductForm = ({ onClose }) => {
                   name="quantity"
                   value={formData.quantity}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Unit:</label>
@@ -224,9 +272,11 @@ const ProductForm = ({ onClose }) => {
                   name="unit"
                   value={formData.unit}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.unit && <p className="text-red-500 text-xs mt-1">{errors.unit}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
@@ -234,7 +284,6 @@ const ProductForm = ({ onClose }) => {
                   name="category_id"
                   value={formData.category_id}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
                   <option value="">Select a category</option>
@@ -242,6 +291,9 @@ const ProductForm = ({ onClose }) => {
                     <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
+                <span className="block h-6">
+                  {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Subcategory:</label>
@@ -256,6 +308,9 @@ const ProductForm = ({ onClose }) => {
                     <option key={subcategory.id} value={subcategory.id}>{subcategory.name}</option>
                   ))}
                 </select>
+                <span className="block h-6">
+                  {errors.subcategory_id && <p className="text-red-500 text-xs mt-1">{errors.subcategory_id}</p>}
+                </span>
               </div>
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">Store:</label>
@@ -263,7 +318,6 @@ const ProductForm = ({ onClose }) => {
                   name="store_id"
                   value={formData.store_id}
                   onChange={handleChange}
-                  required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
                   <option value="">Select a store</option>
@@ -271,6 +325,9 @@ const ProductForm = ({ onClose }) => {
                     <option key={store.id} value={store.id}>{store.name}</option>
                   ))}
                 </select>
+                <span className="block h-6">
+                  {errors.store_id && <p className="text-red-500 text-xs mt-1">{errors.store_id}</p>}
+                </span>
               </div>
               <div className="col-span-2">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Product Image:</label>
@@ -280,13 +337,16 @@ const ProductForm = ({ onClose }) => {
                   onChange={handleFileChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span className="block h-6">
+                  {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
+                </span>
               </div>
             </div>
           </div>
           <div className="flex justify-end mt-4">
             <button
               type="submit"
-              className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+              className="bg-primary-green text-white font-bold py-2 px-4 rounded hover:bg-green-900 focus:outline-none focus:shadow-outline"
             >
               Submit
             </button>
@@ -298,5 +358,8 @@ const ProductForm = ({ onClose }) => {
 };
 
 export default ProductForm;
+
+
+
 
 

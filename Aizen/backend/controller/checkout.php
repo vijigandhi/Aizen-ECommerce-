@@ -181,9 +181,9 @@ class CheckoutController
     private function sendConfirmationEmail($userName, $userEmail, $total, $orderId)
     {
         $mail = new PHPMailer(true);
-
+    
         try {
-            //Server settings
+            // Server settings
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP host
             $mail->SMTPAuth = true;
@@ -191,12 +191,35 @@ class CheckoutController
             $mail->Password = 'nxwe euhq phcg zjsz'; // Replace with your SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
-
-            //Recipients
-            $mail->setFrom('no-reply@example.com', 'Your Orders'); 
+    
+            // Recipients
+            $mail->setFrom('no-reply@example.com', 'Aizen Orders');
             $mail->addAddress($userEmail); // Use the customer's email
-
+    
+            // Retrieve order items
+            $orderItemsQuery = $this->db->prepare("
+                SELECT p.name AS product_name, oi.quantity, oi.price 
+                FROM order_items oi 
+                JOIN products p ON oi.product_id = p.id 
+                WHERE oi.order_id = ?
+            ");
+            $orderItemsQuery->execute([$orderId]);
+            $orderItems = $orderItemsQuery->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Build the cart items summary
+            $itemsHtml = '';
+            foreach ($orderItems as $item) {
+                $itemsHtml .= "
+                    <tr>
+                        <td style='padding: 10px; border-bottom: 1px solid #ddd;'>{$item['product_name']}</td>
+                        <td style='padding: 10px; border-bottom: 1px solid #ddd; text-align: center;'>{$item['quantity']}</td>
+                        <td style='padding: 10px; border-bottom: 1px solid #ddd; text-align: right;'>₹{$item['price']}</td>
+                    </tr>";
+            }
+    
             // Content
+            $imageUrl = 'https://cdn.discordapp.com/attachments/1163859351568650270/1277507116361580544/Successful_purchase-pana.png?ex=66cf64f7&is=66ce1377&hm=46f21165a33fd221285dcb8b51df6b2cdc15074e2de562cd22176b71169a1c62&';
+    
             $mail->isHTML(true);
             $mail->Subject = 'Order Confirmation';
             $mail->Body = "
@@ -204,58 +227,146 @@ class CheckoutController
             <head>
                 <style>
                     body {
-                        font-family: Arial, sans-serif;
+                        font-family: Montserrat, sans-serif;
                         color: #333;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f7f7f7;
                     }
                     .container {
                         max-width: 600px;
-                        margin: 0 auto;
+                        margin: 20px auto;
                         padding: 20px;
                         border: 1px solid #ddd;
                         border-radius: 8px;
-                        background-color: #f9f9f9;
+                        background-color: #ffffff;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                     }
                     h1 {
-                        color: #007BFF;
+                        text-align: center;
+                        color: #4CAF50;
+                        font-size: 32px;
+                        margin-top: 0;
+                        font-family:'Montserrat, cursive';
                     }
+                    h3{
+                        text-align: center;
+                        color:black;
+                    }
+
                     p {
                         font-size: 16px;
-                        line-height: 1.5;
+                        line-height: 1.6;
+                        margin: 0 0 10px;
                     }
                     .highlight {
-                        color: #007BFF;
+                        color: #4CAF50;
                     }
                     .footer {
-                        margin-top: 20px;
+                        margin-top: 30px;
                         font-size: 14px;
-                        color: #777;
+                        color: #4CAF50;
                         text-align: center;
+                    }
+                    .footer p {
+                        margin: 5px 0;
+                    }
+                    .order-summary {
+                        margin-top: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+                    .order-summary-header {
+                        background-color: #4CAF50;
+                        padding: 10px;
+                        font-size: 18px;
+                        color: #ffffff;
+                    }
+                    .order-summary-content {
+                        padding: 10px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        padding: 10px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f4f4f4;
+                    }
+                    .total {
+                        font-size: 18px;
+                        font-weight: bold;
+                        text-align: right;
+                        padding: 10px;
+                        border-top: 2px solid #4CAF50;
+                    }
+                        img {
+                        max-width: 100%;
+                        height: 350px;
+                        display: block;
+                        margin: 20px 0;
                     }
                 </style>
             </head>
             <body>
                 <div class='container'>
-                    <h1>Order Confirmation</h1>
-                    <p>Dear <span class='highlight'>$userName</span>,</p>
-                    <p>Thank you for your order. Your order ID is <strong>$orderId</strong> and the total amount is <strong>\$$total</strong>.</p>
-                    <p>If you have any questions, feel free to contact us.</p>
+                    <h1>Aizen</h1>
+                    <h3>Order Confirmation</h3>
+                                        <center><img src='" . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . "' alt='Welcome Image'></center>
+
+                    <p>Dear <span class='highlight'>" . htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') . "</span>,</p>
+                    <p>Thank you for your order! Your order ID is <strong>" . htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') . "</strong> and the total amount is <strong>₹" . htmlspecialchars($total, ENT_QUOTES, 'UTF-8') . "</strong>.</p>
+                    <p>Below is the summary of your order:</p>
+                    <div class='order-summary'>
+                        <div class='order-summary-header'>
+                            Order Summary
+                        </div>
+                        <div class='order-summary-content'>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    " . $itemsHtml . "
+                                    <tr>
+                                        <td colspan='2' class='total'>Total</td>
+                                        <td class='total'>₹" . htmlspecialchars($total, ENT_QUOTES, 'UTF-8') . "</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p>We are currently processing your order and will notify you once it has been shipped. If you have any questions, please do not hesitate to contact us.</p>
                     <div class='footer'>
-                        <p>Best regards,</p>
-                        <p>Aizen</p>
+                        <p>Thank you for your purchase</p>
+                        <p><strong>Aizen</strong></p>
                     </div>
                 </div>
             </body>
             </html>
             ";
-            
-
+    
+            // Send email
             $mail->send();
-            error_log('Confirmation email sent successfully.');
         } catch (Exception $e) {
-            error_log("Error sending confirmation email: {$mail->ErrorInfo}");
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     }
-}
+    
+    }
+    
+    
+    
+    
 
 $checkoutController = new CheckoutController();
 $checkoutController->handleCheckout();

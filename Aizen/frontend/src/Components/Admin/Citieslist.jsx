@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import CityForm from './CityForm';
 
@@ -8,14 +8,15 @@ const CitiesList = () => {
   const [showCityForm, setShowCityForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [entriesPerPage, setEntriesPerPage] = useState(6);
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   useEffect(() => {
     const fetchCities = async () => {
       try {
         const response = await fetch('http://localhost:8000/controller/Admin/getCities.php');
         const data = await response.json();
-        console.log('Fetched cities data:', data)
         setCities(data);
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -36,6 +37,16 @@ const CitiesList = () => {
   const handleEntriesChange = (e) => {
     setEntriesPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page
+  };
+
+  const handleViewClick = (city) => {
+    setSelectedCity(city);
+    setShowDetailModal(true);
+  };
+
+  const closeDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedCity(null);
   };
 
   // Filter and paginate the cities
@@ -75,9 +86,9 @@ const CitiesList = () => {
             value={entriesPerPage}
             onChange={handleEntriesChange}
           >
-            <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
+            <option value="20">20</option>
           </select>
           <span className="ml-2">entries</span>
         </div>
@@ -97,7 +108,6 @@ const CitiesList = () => {
             <tr>
               <th className="py-3 px-6 text-left">City ID</th>
               <th className="py-3 px-6 text-left">City Name</th>
-              {/* <th className="py-3 px-6 text-left">State ID</th> */}
               <th className="py-3 px-6 text-left">Action</th>
             </tr>
           </thead>
@@ -106,9 +116,8 @@ const CitiesList = () => {
               <tr key={city.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
                 <td className="py-3 px-6">{city.id}</td>
                 <td className="py-3 px-6">{city.name}</td>
-                {/* <td className="py-3 px-6">{city.state_id}</td> */}
                 <td className="py-3 px-6 border-0 flex justify-center space-x-5">
-                <button
+                  <button
                     className="text-blue-500 border-0 hover:text-blue-700"
                     onClick={() => handleViewClick(city)}
                   >
@@ -152,9 +161,26 @@ const CitiesList = () => {
           </div>
         </div>
       )}
+
+      {/* City Detail Modal */}
+      {showDetailModal && selectedCity && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">City Details</h2>
+            <p><strong>City ID:</strong> {selectedCity.id}</p>
+            <p><strong>City Name:</strong> {selectedCity.name}</p>
+            {/* Add more city details as needed */}
+            <button
+              onClick={closeDetailModal}
+              className="mt-4 bg-primary-green hover:bg-green-900 text-white font-bold py-2 px-4 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default CitiesList;
-

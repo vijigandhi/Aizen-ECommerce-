@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoryForm = ({ onClose }) => {
   const [categoryName, setCategoryName] = useState('');
@@ -45,16 +47,17 @@ const CategoryForm = ({ onClose }) => {
 
       const result = await response.json();
       if (result.success) {
-        alert('Category added successfully!');
+        toast.success('Category added successfully!');
         setCategoryName('');
         setCategoryDescription('');
         setCategoryImage(null);
         onClose();
       } else {
-        alert('Failed to add category: ' + result.message);
+        toast.error('Failed to add category: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred while adding the category.');
     }
   };
 
@@ -88,11 +91,7 @@ const CategoryForm = ({ onClose }) => {
           </svg>
         </button>
         <h2 className="text-xl font-bold mb-4">Add New Category</h2>
-        <form
-          className="max-w-md mx-auto p-4 overflow-y-auto"
-          onSubmit={handleSubmit}
-          style={{ height: '360px' }}
-        >
+        <form className="max-w-md mx-auto p-4" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryName">
               Category Name
@@ -104,9 +103,9 @@ const CategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('categoryName', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.categoryName && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoryName}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.categoryName ? '' : 'hidden'}`}>{errors.categoryName}</p>
+            </span>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryDescription">
@@ -118,9 +117,9 @@ const CategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('categoryDescription', e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.categoryDescription && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoryDescription}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.categoryDescription ? '' : 'hidden'}`}>{errors.categoryDescription}</p>
+            </span>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryImage">
@@ -132,9 +131,9 @@ const CategoryForm = ({ onClose }) => {
               onChange={(e) => handleInputChange('categoryImage', e.target.files[0])}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {errors.categoryImage && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoryImage}</p>
-            )}
+            <span className="block h-6">
+              <p className={`text-red-500 text-xs ${errors.categoryImage ? '' : 'hidden'}`}>{errors.categoryImage}</p>
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <button
@@ -146,8 +145,11 @@ const CategoryForm = ({ onClose }) => {
           </div>
         </form>
       </div>
+      {/* Add ToastContainer to enable Toastify notifications */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default CategoryForm;
+

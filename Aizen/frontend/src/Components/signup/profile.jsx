@@ -10,7 +10,7 @@ const Profile = ({ setProfileOpen }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState('https://static.thenounproject.com/png/547804-200.png');
+  const [imageUrl, setImageUrl] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [userId, setUserId] = useState(null);
   const [email, setEmail] = useState(''); // Add state for email
@@ -69,7 +69,7 @@ const Profile = ({ setProfileOpen }) => {
 
         setProfile(response.data);
         setFormData(response.data);
-        setImageUrl(response.data.avatar || 'https://static.thenounproject.com/png/547804-200.png');
+        setImageUrl(response.data.avatar);
       } catch (error) {
         console.error('Error fetching profile:', error.response?.data || error.message);
       }
@@ -340,9 +340,9 @@ const Profile = ({ setProfileOpen }) => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={handleEditClick}
-                className="bg-secondary-yellow text-white py-2 px-4 rounded-md shadow hover:bg-yellow-500"
+                className="bg-yellow-500 text-white py-2 px-4 font-bold rounded-md shadow hover:bg-yellow-600"
               >
-                Edit
+                Edit Profile
               </button>
             </div>
           )}

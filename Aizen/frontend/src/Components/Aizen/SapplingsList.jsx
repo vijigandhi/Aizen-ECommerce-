@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductCard from './ProductCard'; // Ensure this path is correct
+import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 
 const SapplingsList = ({ searchTerm, storeId }) => {
@@ -21,8 +21,8 @@ const SapplingsList = ({ searchTerm, storeId }) => {
           const spiceProducts = response.data.allProducts.filter(product => product.category_id === 14);
           const shuffledProducts = shuffleArray(spiceProducts);
           setProducts(shuffledProducts);
-          setFilteredProducts(shuffledProducts); // Initially set filteredProducts to all spices
-          setVisibleProducts(shuffledProducts.slice(0, 10)); // Initially show only the first 10 products
+          setFilteredProducts(shuffledProducts);
+          setVisibleProducts(shuffledProducts.slice(0, 10)); 
         } else {
           setError(response.data.error || 'No products found');
         }
@@ -41,19 +41,19 @@ const SapplingsList = ({ searchTerm, storeId }) => {
       (!storeId || product.store_id === Number(storeId))
     );
     setFilteredProducts(filtered);
-    setVisibleProducts(filtered.slice(0, 10)); // Reset visible products when filtering
+    setVisibleProducts(filtered.slice(0, 10));
   }, [searchTerm, storeId, products]);
 
   useEffect(() => {
-    // Lazy load more products when the user scrolls near the bottom
+
     if (inView && visibleProducts.length < filteredProducts.length) {
-      // Introduce a delay before loading the next batch of products
+
       const loadMoreProducts = setTimeout(() => {
         const nextBatch = filteredProducts.slice(visibleProducts.length, visibleProducts.length + 10);
         setVisibleProducts((prev) => [...prev, ...nextBatch]);
-      }, 1000); // 1 second delay
+      }, 1000); 
 
-      return () => clearTimeout(loadMoreProducts); // Clear timeout if component unmounts or re-renders
+      return () => clearTimeout(loadMoreProducts); 
     }
   }, [inView, filteredProducts, visibleProducts.length]);
 

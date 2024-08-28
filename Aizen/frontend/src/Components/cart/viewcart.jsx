@@ -9,7 +9,7 @@ const ViewCart = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);  
 
   const navigate = useNavigate();
 
@@ -44,25 +44,23 @@ const ViewCart = () => {
       const response = await axios.get('http://localhost:8000/controller/cart.php', {
         params: { id: userId },
       });
-
+  
       if (response.data.error) {
-        console.error('Error from server:', response.data.error);
         setError(response.data.error);
-        setProducts([]);
       } else if (Array.isArray(response.data)) {
         setProducts(response.data);
         setError(null);
       } else {
-        console.error('Unexpected response format:', response.data);
         setError('Unexpected response format');
-        setProducts([]);
       }
     } catch (err) {
-      console.error('Error fetching cart items:', err.response?.data || err.message);
       setError('Error fetching cart items');
-      setProducts([]);
     }
   };
+  const handleContinueShopping = () => {
+    navigate('/aizen/all-categories'); // Or wherever the user should go
+  };
+  
 
   const updateQuantity = async (cartItemId, newQuantity) => {
     if (!cartItemId || newQuantity === undefined) {
@@ -159,7 +157,7 @@ const ViewCart = () => {
 
   const calculateDelivery = () => {
     // Assuming delivery cost is fixed; adjust as needed
-    return 5.00;
+    return 0.00;
   };
 
   const calculateTotal = () => {
@@ -175,9 +173,9 @@ const ViewCart = () => {
         {products.length === 0 ? (
           <p className="mt-6 text-center text-gray-500">Your cart is empty.</p>
         ) : (
-          <div className="rounded-lg overflow-hidden">
-            <div className="w-full flex justify-center">
-               <table className="w-11/12 bg-white shadow-md rounded-lg mt-6">
+          <div className="flex flex-col lg:flex-row lg:space-x-8"> {/* Add flex container */}
+            <div className="lg:w-8/12"> {/* Adjust the width of the table container */}
+              <table className="w-full bg-white shadow-md rounded-lg mt-6">
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
@@ -203,7 +201,7 @@ const ViewCart = () => {
                           <span>{product.product_name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 x ${product.special_price}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 x ₹{product.special_price}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center">
                           <button
@@ -223,57 +221,81 @@ const ViewCart = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${(parseFloat(product.special_price) * parseInt(product.quantity)).toFixed(2)}</td>
-                      {/* <td className="relative px-6 py-4"> */}
-                        {/* Trash icon */}
-                        <button
-                          onClick={() => deleteCartItem(product.cart_item_id)}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 text-red-600 border border-red-600 rounded-full p-2 transition-opacity duration-200"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      {/* </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{(parseFloat(product.special_price) * parseInt(product.quantity)).toFixed(2)}</td>
+                      <button
+                        onClick={() => deleteCartItem(product.cart_item_id)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 text-red-600 border border-red-600 rounded-full p-2 transition-opacity duration-200"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              </div>
-              <div className="mt-8">
-                <div className="relative max-w-md bg-white shadow-md rounded-lg p-6 ml-12">
-                  <div className="space-y-6">
-                    {/* Subtotal */}
-                    <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>Subtotal:</span>
-                      <span>${calculateSubtotal()}</span>
-                    </div>
-                    {/* Delivery */}
-                    <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>Delivery:</span>
-                      <span>${calculateDelivery()}</span>
-                    </div>
-                    {/* Total */}
-                    <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-4">
-                      <span>Total:</span>
-                      <span>${calculateTotal()}</span>
-                    </div>
+            </div>
+            <div className="lg:w-4/12 mt-8 lg:mt-5"> {/* Adjust the width of the summary container */}
+              <div className="relative bg-white shadow-md rounded-lg p-6">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Order Summary</h1> {/* Enhanced styling for "Order Summary" */}
+
+                <div className="space-y-6">
+                  {/* Subtotal */}
+                  <div className="flex justify-between text-lg  text-gray-900">
+                    <span>Subtotal:</span>
+                    <span>₹{calculateSubtotal()}</span>
                   </div>
-                  {/* Checkout Button */}
-                  <div className="mt-6 flex justify-end">
-                    <button
-                      onClick={handleCheckout}
-                      className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
-                    >
-                      Checkout
-                    </button>
+                  {/* Delivery */}
+                  <div className="flex justify-between text-lg  text-gray-900">
+                    <span>Delivery:</span>
+                    <span>₹{calculateDelivery()}</span>
+                  </div>
+                  {/* Tax */}
+                  <div className="flex justify-between text-lg  text-gray-900">
+                    <span>Tax:</span>
+
+                    <span>₹0</span>
+
+                  </div>
+                  {/* Discount */}
+                  <div className="flex justify-between text-lg  text-gray-900">
+                    <span>Discount:</span>
+
+                    <span>₹0</span>
+
+                  </div>
+                  {/* Total */}
+                  <div className="flex justify-between text-lg font-bold text-gray-900 border-t-2 pt-4">
+                    <span>Total:</span>
+                    <span>₹{calculateTotal()}</span>
                   </div>
                 </div>
+                
+                {/* Buttons Section */}
+                <div className="mt-6 flex justify-between">
+                  {/* Continue Shopping Button */}
+                  <button
+                    onClick={handleContinueShopping}
+                    className="px-6 py-3 bg-primary-green text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
+                  >
+                    Continue Shopping
+                  </button>
+
+                  {/* Checkout Button */}
+                  <button
+                    onClick={handleCheckout}
+                    className="px-6 py-3 bg-primary-green text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
+                  >
+                    Checkout
+                  </button>
+                </div>
               </div>
+            </div>
 
           </div>
         )}
       </div>
     </div>
   );
-};
+  
+  };
 
 export default ViewCart;

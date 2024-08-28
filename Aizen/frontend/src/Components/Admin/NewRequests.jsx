@@ -7,7 +7,7 @@ const NewRequests = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
-  const [requestsPerPage, setRequestsPerPage] = useState(5);
+  const [requestsPerPage, setRequestsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -148,8 +148,9 @@ const NewRequests = () => {
             onChange={handleRequestsPerPageChange}
             className="border border-gray-300 rounded py-1 px-2 text-gray-700"
           >
-            <option value="5">5</option>
+            
             <option value="10">10</option>
+            <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
           </select>

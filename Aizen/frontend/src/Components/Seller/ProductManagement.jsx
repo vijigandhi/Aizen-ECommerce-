@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import ProductForm from './ProductForm'; // Ensure this component exists and is correctly implemented
 import { useNavigate } from 'react-router-dom';
@@ -12,10 +12,12 @@ const ProductManagement = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductForm, setShowProductForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(5); // Default entries per page
+  const [productsPerPage, setProductsPerPage] = useState(10); // Default entries per page
   const [loading, setLoading] = useState(true); // Loading state
   const [userId, setUserId] = useState(null); // State to store user ID
   const [isAdmin, setIsAdmin] = useState(false); // State to check if user is an admin
+  const [showEditModal, setShowEditModal] = useState(false); // State for edit modal visibility
+  const [showViewModal, setShowViewModal] = useState(false); // State for view modal visibility
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const ProductManagement = () => {
           const response = await axios.get('http://localhost:8000/controller/Admin/getUserDetails.php', {
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (response.data.user.role_id === 1 || response.data.user.role_id === 2 ) {
+          if (response.data.user.role_id === 1 || response.data.user.role_id === 2) {
             setIsAdmin(true);
             setUserId(response.data.user.id); // Store user ID
           } else {
@@ -65,14 +67,24 @@ const ProductManagement = () => {
 
   const handleViewClick = (product) => {
     setSelectedProduct(product);
+    setShowViewModal(true); // Show the view modal
   };
 
-  const handleCloseModal = () => {
+  const handleCloseViewModal = () => {
     setSelectedProduct(null);
+    setShowViewModal(false); // Close the view modal
   };
 
   const toggleProductForm = () => {
     setShowProductForm(!showProductForm);
+  };
+
+  const handleEditClick = () => {
+    setShowEditModal(true); // Show the edit modal
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false); // Close the edit modal
   };
 
   const handleSort = (key) => {
@@ -108,17 +120,46 @@ const ProductManagement = () => {
     setCurrentPage(1); // Reset to first page when entries per page change
   };
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredProducts.length / productsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? <FaSortUp /> : <FaSortDown />;
+  const getPaginationRange = () => {
+    const range = [];
+    let startPage, endPage;
+
+    if (totalPages <= 3) {
+      // If total pages are less than or equal to 3, show all pages
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      // Determine start and end page for the range
+      startPage = Math.max(1, currentPage - 1);
+      endPage = Math.min(totalPages, currentPage + 1);
+
+      if (currentPage > 2) {
+        range.push('...');
+      }
+
+      if (startPage > 1) {
+        range.push(1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        range.push(i);
+      }
+
+      if (endPage < totalPages) {
+        range.push('...');
+      }
+
+      if (endPage < totalPages) {
+        range.push(totalPages);
+      }
     }
-    return null;
+
+    return range;
   };
+
+  const paginationRange = getPaginationRange();
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
@@ -171,13 +212,13 @@ const ProductManagement = () => {
                   className="py-3 px-6 text-left cursor-pointer"
                   onClick={() => handleSort('id')}
                 >
-                  Product ID {getSortIcon('id')}
+                  Product ID 
                 </th>
                 <th
                   className="py-3 px-6 text-left cursor-pointer"
                   onClick={() => handleSort('name')}
                 >
-                  Name {getSortIcon('name')}
+                  Name 
                 </th>
                 <th className="py-3 px-6 text-center">Actions</th>
               </tr>
@@ -185,10 +226,10 @@ const ProductManagement = () => {
             <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
               {currentProducts.length > 0 ? (
                 currentProducts.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
-                    <td className="py-3 px-6">{product.id}</td>
-                    <td className="py-3 px-6">{product.name}</td>
-                    <td className="py-3 px-6 text-center flex justify-center space-x-4">
+                  <tr key={product.id} className="border-b">
+                    <td className="py-4 px-6">{product.id}</td>
+                    <td className="py-4 px-6">{product.name}</td>
+                    <td className="py-4 px-6 text-center flex justify-center space-x-4">
                       <button
                         className="text-blue-500 hover:text-blue-700"
                         onClick={() => handleViewClick(product)}
@@ -197,6 +238,7 @@ const ProductManagement = () => {
                       </button>
                       <button
                         className="text-green-500 hover:text-green-700"
+                        onClick={handleEditClick}
                       >
                         <FaEdit />
                       </button>
@@ -205,51 +247,72 @@ const ProductManagement = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center py-3">No products found</td>
+                  <td colSpan="3" className="text-center py-4">No products found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       )}
-
       <div className="flex justify-between items-center mt-4">
         <div>
-          Showing {indexOfFirstProduct + 1} to {indexOfLastProduct > filteredProducts.length ? filteredProducts.length : indexOfLastProduct} of {filteredProducts.length} entries
+          <p className="text-sm text-gray-600">
+            Showing {indexOfFirstProduct + 1} to {Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} entries
+          </p>
         </div>
-        <div className="flex space-x-1">
-          {pageNumbers.map(number => (
+        <div className="flex justify-center">
+          {paginationRange.map((page, index) => (
             <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={`py-1 px-3 rounded ${currentPage === number ? 'bg-green-900 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-700 hover:text-white`}
+              key={index}
+              onClick={() => page !== '...' && paginate(page)}
+              disabled={page === '...'}
+              className={`px-3 py-1 mx-1 rounded ${currentPage === page ? 'bg-primary-green text-white' : 'bg-white text-gray-700 hover:bg-gray-200'
+                }`}
             >
-              {number}
+              {page}
             </button>
           ))}
         </div>
       </div>
 
-      {showProductForm && <ProductForm onClose={toggleProductForm} />}
-      {selectedProduct && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
+      {/* View Modal */}
+      {showViewModal && selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-80">
+            <h3 className="text-xl font-bold mb-4">Product Details</h3>
             <p><strong>ID:</strong> {selectedProduct.id}</p>
             <p><strong>Name:</strong> {selectedProduct.name}</p>
-            <p><strong>Description:</strong> {selectedProduct.short_description}</p>
+            {/* Add more product details as needed */}
             <button
-              onClick={handleCloseModal}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+              className="mt-4 px-4 py-2 bg-primary-green text-white rounded hover:bg-green-900"
+              onClick={handleCloseViewModal}
             >
               Close
             </button>
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-80">
+            <h3 className="text-xl font-bold mb-4">Inventory Management</h3>
+            <p>Inventory management is under construction.</p>
+            <button
+              className="mt-4 px-4 py-2 bg-primary-green text-white rounded hover:bg-green-900"
+              onClick={handleCloseEditModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Product Form */}
+      {showProductForm && <ProductForm closeForm={toggleProductForm} />}
     </div>
   );
 };
 
 export default ProductManagement;
-
