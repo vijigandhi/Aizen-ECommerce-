@@ -101,7 +101,6 @@ const OrderDetails = () => {
             <section className="p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
 
                 <h1 className="text-4xl font-bold mb-8 text-gray-900">Your Orders</h1>
-                {error && <p className="text-red-600 mb-4 text-lg">{error}</p>}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-64">
                         <div className="border-t-4 border-green-600 border-solid rounded-full w-16 h-16 animate-spin"></div>

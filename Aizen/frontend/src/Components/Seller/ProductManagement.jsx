@@ -16,6 +16,8 @@ const ProductManagement = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [userId, setUserId] = useState(null); // State to store user ID
   const [isAdmin, setIsAdmin] = useState(false); // State to check if user is an admin
+  const [showEditModal, setShowEditModal] = useState(false); // State for edit modal visibility
+  const [showViewModal, setShowViewModal] = useState(false); // State for view modal visibility
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const ProductManagement = () => {
           const response = await axios.get('http://localhost:8000/controller/Admin/getUserDetails.php', {
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (response.data.user.role_id === 1 || response.data.user.role_id === 2 ) {
+          if (response.data.user.role_id === 1 || response.data.user.role_id === 2) {
             setIsAdmin(true);
             setUserId(response.data.user.id); // Store user ID
           } else {
@@ -65,14 +67,24 @@ const ProductManagement = () => {
 
   const handleViewClick = (product) => {
     setSelectedProduct(product);
+    setShowViewModal(true); // Show the view modal
   };
 
-  const handleCloseModal = () => {
+  const handleCloseViewModal = () => {
     setSelectedProduct(null);
+    setShowViewModal(false); // Close the view modal
   };
 
   const toggleProductForm = () => {
     setShowProductForm(!showProductForm);
+  };
+
+  const handleEditClick = () => {
+    setShowEditModal(true); // Show the edit modal
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false); // Close the edit modal
   };
 
   const handleSort = (key) => {
@@ -214,10 +226,10 @@ const ProductManagement = () => {
             <tbody className="text-gray-700 text-sm h-48 max-h-48 overflow-y-auto">
               {currentProducts.length > 0 ? (
                 currentProducts.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-100 transition duration-300">
-                    <td className="py-3 px-6">{product.id}</td>
-                    <td className="py-3 px-6">{product.name}</td>
-                    <td className="py-3 px-6 text-center flex justify-center space-x-4">
+                  <tr key={product.id} className="border-b">
+                    <td className="py-4 px-6">{product.id}</td>
+                    <td className="py-4 px-6">{product.name}</td>
+                    <td className="py-4 px-6 text-center flex justify-center space-x-4">
                       <button
                         className="text-blue-500 hover:text-blue-700"
                         onClick={() => handleViewClick(product)}
@@ -225,7 +237,9 @@ const ProductManagement = () => {
                         <FaEye />
                       </button>
                       <button
-                        className="text-green-500 hover:text-green-700">
+                        className="text-green-500 hover:text-green-700"
+                        onClick={handleEditClick}
+                      >
                         <FaEdit />
                       </button>
                     </td>
@@ -233,79 +247,72 @@ const ProductManagement = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center py-3">No products found</td>
+                  <td colSpan="3" className="text-center py-4">No products found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       )}
-
       <div className="flex justify-between items-center mt-4">
         <div>
-          Showing {indexOfFirstProduct + 1} to {indexOfLastProduct > filteredProducts.length ? filteredProducts.length : indexOfLastProduct} of {filteredProducts.length} entries
+          <p className="text-sm text-gray-600">
+            Showing {indexOfFirstProduct + 1} to {Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} entries
+          </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            &lt;
-          </button>
+        <div className="flex justify-center">
           {paginationRange.map((page, index) => (
-            page === '...' ? (
-              <span key={index} className="px-3 py-1 text-gray-700">...</span>
-            ) : (
-              <button
-                key={page}
-                onClick={() => paginate(page)}
-                className={`py-1 px-3 rounded ${currentPage === page ? 'bg-green-900 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-700 hover:text-white`}
-              >
-                {page}
-              </button>
-            )
+            <button
+              key={index}
+              onClick={() => page !== '...' && paginate(page)}
+              disabled={page === '...'}
+              className={`px-3 py-1 mx-1 rounded ${currentPage === page ? 'bg-primary-green text-white' : 'bg-white text-gray-700 hover:bg-gray-200'
+                }`}
+            >
+              {page}
+            </button>
           ))}
-          <button
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            &gt;
-          </button>
         </div>
       </div>
 
-      {showProductForm && (
-        <>
-          <div className="fixed inset-0 bg-gray-800 custom-scrollbar bg-opacity-70 z-40" />
-          <div className="fixed inset-0 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl custom-scrollbar transform transition-transform duration-300 ease-in-out">
-              <ProductForm onClose={toggleProductForm} />
-            </div>
-          </div>
-        </>
-      )}
-      {selectedProduct && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-70 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-lg transform transition-transform duration-300 ease-in-out">
-            <h2 className="text-3xl font-semibold mb-6 text-gray-800">Product Details</h2>
-            <p className="text-gray-700 mb-2"><strong>ID:</strong> {selectedProduct.id}</p>
-            <p className="text-gray-700 mb-2"><strong>Name:</strong> {selectedProduct.name}</p>
-            <p className="text-gray-700 mb-4"><strong>Description:</strong> {selectedProduct.short_description}</p>
+      {/* View Modal */}
+      {showViewModal && selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-80">
+            <h3 className="text-xl font-bold mb-4">Product Details</h3>
+            <p><strong>ID:</strong> {selectedProduct.id}</p>
+            <p><strong>Name:</strong> {selectedProduct.name}</p>
+            {/* Add more product details as needed */}
             <button
-              onClick={handleCloseModal}
-              className="bg-red-600 hover:bg-red-800 text-white font-semibold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="mt-4 px-4 py-2 bg-primary-green text-white rounded hover:bg-green-900"
+              onClick={handleCloseViewModal}
             >
               Close
             </button>
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-80">
+            <h3 className="text-xl font-bold mb-4">Inventory Management</h3>
+            <p>Inventory management is under construction.</p>
+            <button
+              className="mt-4 px-4 py-2 bg-primary-green text-white rounded hover:bg-green-900"
+              onClick={handleCloseEditModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Product Form */}
+      {showProductForm && <ProductForm closeForm={toggleProductForm} />}
     </div>
   );
 };
 
 export default ProductManagement;
-
-

@@ -237,24 +237,27 @@ const Stores = (onClose) => {
          </div>
        </div>
       }
-      {selectedStore &&
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-300 max-w-sm w-full">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Store Details</h2>
-        <p className="text-gray-700 mb-2"><strong>ID:</strong> {selectedStore.id}</p>
-        <p className="text-gray-700 mb-2"><strong>Name:</strong> {selectedStore.name}</p>
-        <p className="text-gray-700 mb-2"><strong>Status:</strong> {selectedStore.is_active ? 'Active' : 'Inactive'}</p>
-        <p className="text-gray-700 mb-4"><strong>Popularity:</strong> {selectedStore.is_popular ? 'Popular' : 'Not Popular'}</p>
-        <button 
-          onClick={handleCloseModal} 
-          className="mt-4 bg-red-600 text-white py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-        >
-          Close
-        </button>
-      </div>
+      {selectedStore && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-300 max-w-sm w-full">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Store Details</h2>
+      <p className="text-gray-700 mb-2"><strong>ID:</strong> {selectedStore.id}</p>
+      <p className="text-gray-700 mb-2"><strong>Name:</strong> {selectedStore.name}</p>
+      <p className="text-gray-700 mb-2">
+        <strong>Status:</strong> {selectedStore.is_active === '1' ? 'Active' : 'Inactive'}
+      </p>
+      <p className="text-gray-700 mb-4">
+        <strong>Popularity:</strong> {selectedStore.is_popular === '1' ? 'Popular' : 'Not Popular'}
+      </p>
+      <button 
+        onClick={handleCloseModal} 
+        className="mt-4 bg-red-600 text-white py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+      >
+        Close
+      </button>
     </div>
-    
-      }
+  </div>
+)}
       {editingStore &&
        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 max-w-md w-full">

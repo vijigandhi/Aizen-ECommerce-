@@ -120,7 +120,7 @@ const Cart = () => {
                 </div>
   
                 {/* Main Content Section */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-14">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 sm:px-6 mt-2 -mt-12">
                 <br />
 
                   {products.length === 0 ? (

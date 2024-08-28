@@ -77,7 +77,7 @@ const ProductDetails = () => {
       return;
     }
     if (!customerId) {
-      toast.error('User not logged in. Redirecting to login page.');
+      toast.error('Please sign in to purchase products');
       navigate('/login'); 
       return;
     }
