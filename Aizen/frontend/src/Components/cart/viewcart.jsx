@@ -157,7 +157,7 @@ const ViewCart = () => {
 
   const calculateDelivery = () => {
     // Assuming delivery cost is fixed; adjust as needed
-    return 5.00;
+    return 0.00;
   };
 
   const calculateTotal = () => {
@@ -252,14 +252,14 @@ const ViewCart = () => {
                   <div className="flex justify-between text-lg  text-gray-900">
                     <span>Tax:</span>
 
-                    <span>₹0:00</span>
+                    <span>₹0</span>
 
                   </div>
                   {/* Discount */}
                   <div className="flex justify-between text-lg  text-gray-900">
                     <span>Discount:</span>
 
-                    <span>₹0:00</span>
+                    <span>₹0</span>
 
                   </div>
                   {/* Total */}

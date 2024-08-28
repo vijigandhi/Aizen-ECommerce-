@@ -46,7 +46,7 @@ const Navbar = ({ selectedMenuTitle }) => {
           className="h-10 w-10 text-gray-500 cursor-pointer"
           onClick={handleUserIconClick}
         />
-        {isDropdownOpen && (
+        {/* {isDropdownOpen && (
           <div className="absolute right-0 top-10 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-10">
             <button
               className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
@@ -61,7 +61,7 @@ const Navbar = ({ selectedMenuTitle }) => {
               Lock Account
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </header>
   );

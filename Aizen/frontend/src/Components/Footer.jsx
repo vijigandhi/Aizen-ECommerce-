@@ -10,7 +10,7 @@ const Footer = () => {
 
                 <p className="text-base leading-relaxed text-gray-600 mt-7">"Fresh from the farm to your table. Experience the taste of nature with every bite."</p>
 
-                <ul className="flex items-center space-x-3 mt-9">
+                {/* <ul className="flex items-center space-x-3 mt-9">
                     <li>
                         <a href="#" title="" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-blue-600 focus:bg-blue-600">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -52,7 +52,7 @@ const Footer = () => {
                             </svg>
                         </a>
                     </li>
-                </ul>
+                </ul> */}
             </div>
 
             <div>
@@ -60,11 +60,11 @@ const Footer = () => {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-green-900 focus:text-green-900"> About </a>
+                        <a href="/about" title="" className="flex text-base text-black transition-all duration-200 hover:text-green-900 focus:text-green-900"> About </a>
                     </li>
 
                     <li>
-                        <a href="#" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Our Team </a>
+                        <a href="/home" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Our Team </a>
                     </li>
 
                     <li>
@@ -82,7 +82,7 @@ const Footer = () => {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <a href="#" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Customer Support </a>
+                        {/* <a href="#" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Customer Support </a> */}
                     </li>
 
                     <li>
@@ -90,11 +90,11 @@ const Footer = () => {
                     </li>
 
                     <li>
-                        <a href="#" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Terms & Conditions </a>
+                        <a href="/terms-conditions" title="" className="flex text-base text-black transition-all duration-200  hover:text-green-900 focus:text-green-900"> Terms & Conditions </a>
                     </li>
 
                     <li>
-                        <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-green-900 focus:text-blue-600"> Privacy Policy </a>
+                        <a href="/privacy-policy" title="" className="flex text-base text-black transition-all duration-200 hover:text-green-900 focus:text-blue-600"> Privacy Policy </a>
                     </li>
                 </ul>
             </div>

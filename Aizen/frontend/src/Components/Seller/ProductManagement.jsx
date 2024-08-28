@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaEye, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEdit, FaEye } from 'react-icons/fa';
 import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import ProductForm from './ProductForm'; // Ensure this component exists and is correctly implemented
 import { useNavigate } from 'react-router-dom';
@@ -226,7 +226,6 @@ const ProductManagement = () => {
                       </button>
                       <button
                         className="text-green-500 hover:text-green-700">
-                     
                         <FaEdit />
                       </button>
                     </td>
@@ -277,17 +276,26 @@ const ProductManagement = () => {
         </div>
       </div>
 
-      {showProductForm && <ProductForm onClose={toggleProductForm} />}
+      {showProductForm && (
+        <>
+          <div className="fixed inset-0 bg-gray-800 custom-scrollbar bg-opacity-70 z-40" />
+          <div className="fixed inset-0 flex justify-center items-center z-50">
+            <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl custom-scrollbar transform transition-transform duration-300 ease-in-out">
+              <ProductForm onClose={toggleProductForm} />
+            </div>
+          </div>
+        </>
+      )}
       {selectedProduct && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p><strong>ID:</strong> {selectedProduct.id}</p>
-            <p><strong>Name:</strong> {selectedProduct.name}</p>
-            <p><strong>Description:</strong> {selectedProduct.short_description}</p>
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-70 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-lg transform transition-transform duration-300 ease-in-out">
+            <h2 className="text-3xl font-semibold mb-6 text-gray-800">Product Details</h2>
+            <p className="text-gray-700 mb-2"><strong>ID:</strong> {selectedProduct.id}</p>
+            <p className="text-gray-700 mb-2"><strong>Name:</strong> {selectedProduct.name}</p>
+            <p className="text-gray-700 mb-4"><strong>Description:</strong> {selectedProduct.short_description}</p>
             <button
               onClick={handleCloseModal}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+              className="bg-red-600 hover:bg-red-800 text-white font-semibold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             >
               Close
             </button>

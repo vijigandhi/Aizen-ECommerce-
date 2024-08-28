@@ -218,7 +218,7 @@ class CheckoutController
             }
     
             // Content
-            $imageUrl = 'https://cdn.discordapp.com/attachments/1163859351568650270/1277507116361580544/Successful_purchase-pana.png?ex=66cd6ab7&is=66cc1937&hm=2e24fd0b45aa0c880b0add9e5db01b890ac63424b1543a5dc4c41646293d27b5&';
+            $imageUrl = 'https://storyset.com/illustration/ecommerce-web-page/pana#76C68EFF&hide=&hide=complete';
     
             $mail->isHTML(true);
             $mail->Subject = 'Order Confirmation';

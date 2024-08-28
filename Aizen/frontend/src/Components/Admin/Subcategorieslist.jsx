@@ -11,7 +11,7 @@ const SubcategoriesList = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [showSubCategoryForm, setShowSubCategoryForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [subcategoriesPerPage, setSubcategoriesPerPage] = useState(5);
+  const [subcategoriesPerPage, setSubcategoriesPerPage] = useState(10);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
 
   useEffect(() => {
@@ -180,8 +180,9 @@ const SubcategoriesList = () => {
             onChange={handleSubcategoriesPerPageChange}
             className="border border-gray-300 rounded py-1 px-2 text-gray-700"
           >
-            <option value="5">5</option>
+            
             <option value="10">10</option>
+            <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
           </select>

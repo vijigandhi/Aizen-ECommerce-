@@ -155,7 +155,7 @@ const Checkout = () => {
             localStorage.removeItem('total');
 
             setTimeout(() => {
-              window.location.href = '/';
+              window.location.href = '/OrderDetails';
             }, 2000);
           } else {
             setError(updateResponse.data.error || 'Failed to update quantities. Please try again.');

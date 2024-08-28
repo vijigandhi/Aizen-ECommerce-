@@ -7,7 +7,7 @@ const Sellerlist = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
-  const [sellersPerPage, setSellersPerPage] = useState(5); // Default entries per page
+  const [sellersPerPage, setSellersPerPage] = useState(10); // Default entries per page
   const [selectedSeller, setSelectedSeller] = useState(null); // State to manage selected seller
 
   useEffect(() => {
@@ -95,8 +95,9 @@ const Sellerlist = () => {
             onChange={handleSellersPerPageChange}
             className="border border-gray-300 rounded py-1 px-2 text-gray-700"
           >
-            <option value="5">5</option>
+            
             <option value="10">10</option>
+            <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
           </select>

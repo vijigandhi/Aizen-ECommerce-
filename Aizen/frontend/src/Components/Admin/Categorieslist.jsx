@@ -11,7 +11,7 @@ const CategoriesList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [categoriesPerPage, setCategoriesPerPage] = useState(5);
+  const [categoriesPerPage, setCategoriesPerPage] = useState(10);
   const [editingCategory, setEditingCategory] = useState(null);
 
   useEffect(() => {

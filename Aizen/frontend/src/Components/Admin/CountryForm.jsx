@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CountryForm = ({ onClose }) => {
   const [countryName, setCountryName] = useState('');
@@ -34,14 +36,15 @@ const CountryForm = ({ onClose }) => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('Country added successfully!');
+        toast.success('Country added successfully!');
         setCountryName(''); // Clear the input field
         onClose(); // Close the form
       } else {
-        alert('Failed to add country: ' + result.message);
+        toast.error('Failed to add country: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred while adding the country.');
     }
   };
 
@@ -81,8 +84,11 @@ const CountryForm = ({ onClose }) => {
           Add Country
         </button>
       </form>
+      {/* Add the ToastContainer component to the component tree */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default CountryForm;
+

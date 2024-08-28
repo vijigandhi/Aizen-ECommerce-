@@ -1,6 +1,7 @@
 <?php
 // Include database connection file
-include 'db_connect.php';
+include './db_connect.php';
+
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
@@ -10,7 +11,7 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the order ID and status from the POST request
     $orderId = intval($_POST['order_id'] ?? 0);
-    $newStatus = $_POST['status'] ?? '';
+    $newStatus = trim($_POST['status'] ?? '');
 
     // Debugging output
     error_log("Received order_id: " . $orderId);
@@ -26,18 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Prepare and execute the statement
             $stmt = $conn->prepare($updateOrderSql);
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $conn->error);
+            }
             $stmt->bind_param('si', $newStatus, $orderId);
             $stmt->execute();
 
-            // Commit transaction
-            mysqli_commit($conn);
-
-            // Return success response
-            echo json_encode(['success' => true, 'message' => 'Order status updated successfully.']);
+            if ($stmt->affected_rows > 0) {
+                // Commit transaction
+                mysqli_commit($conn);
+                // Return success response
+                echo json_encode(['success' => true, 'message' => 'Order status updated successfully.']);
+            } else {
+                // No rows updated
+                throw new Exception('No rows updated. Check if the order ID exists.');
+            }
         } catch (Exception $e) {
             // Rollback transaction on error
             mysqli_rollback($conn);
-            
             // Return error response
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }

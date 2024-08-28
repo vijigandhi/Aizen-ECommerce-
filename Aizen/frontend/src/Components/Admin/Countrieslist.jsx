@@ -8,14 +8,16 @@ const CountriesList = () => {
   const [showCountryForm, setShowCountryForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [entriesPerPage, setEntriesPerPage] = useState(6);
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [showViewModal, setShowViewModal] = useState(false); // State for view modal
+  const [selectedCountry, setSelectedCountry] = useState(null); // State for selected country
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const response = await fetch('http://localhost:8000/controller/Admin/getCountries.php');
         const data = await response.json();
-        console.log('Fetched countries data:', data); // Log the fetched data
+        console.log('Fetched countries data:', data);
         setCountries(data.countries);
       } catch (error) {
         console.error('Error fetching countries:', error);
@@ -36,6 +38,17 @@ const CountriesList = () => {
   const handleEntriesChange = (e) => {
     setEntriesPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page
+  };
+
+  // Function to handle view button click
+  const handleViewClick = (country) => {
+    setSelectedCountry(country);
+    setShowViewModal(true);
+  };
+
+  const closeViewModal = () => {
+    setShowViewModal(false);
+    setSelectedCountry(null);
   };
 
   // Filter and paginate the countries
@@ -75,9 +88,9 @@ const CountriesList = () => {
             value={entriesPerPage}
             onChange={handleEntriesChange}
           >
-            <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
+            <option value="20">20</option>
           </select>
           <span className="ml-2">entries</span>
         </div>
@@ -108,13 +121,12 @@ const CountriesList = () => {
                 <td className="py-3 px-6 border-0 flex justify-center space-x-5">
                   <button
                     className="text-blue-500 border-0 hover:text-blue-700"
-                    // Add appropriate view/edit functionality here
+                    onClick={() => handleViewClick(country)} // Add view functionality
                   >
                     <FaEye />
                   </button>
                   <button
                     className="text-green-500 border-0 hover:text-green-700"
-                    // Add appropriate view/edit functionality here
                   >
                     <FaEdit />
                   </button>
@@ -148,6 +160,24 @@ const CountriesList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <CountryForm onClose={toggleCountryForm} />
+          </div>
+        </div>
+      )}
+
+      {/* View Country Modal */}
+      {showViewModal && selectedCountry && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Country Details</h2>
+            <p><strong>ID:</strong> {selectedCountry.id}</p>
+            <p><strong>Name:</strong> {selectedCountry.name}</p>
+            {/* Add more country details as needed */}
+            <button
+              onClick={closeViewModal}
+              className="mt-4 bg-primary-green hover:bg-green-900 text-white font-bold py-2 px-4 rounded"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

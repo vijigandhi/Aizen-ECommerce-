@@ -156,7 +156,7 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
 
   const calculateDelivery = () => {
     // You can implement a dynamic delivery fee calculation based on location, weight, etc.
-    const deliveryFee = 5; // Example fixed delivery fee
+    const deliveryFee = 0; // Example fixed delivery fee
     return deliveryFee.toFixed(2);
   };
 
@@ -238,11 +238,11 @@ const CartSummary = ({ onTotalChange, onUserIdChange }) => {
         </div>
         <div className="flex justify-between text-lg text-gray-900">
           <span>Tax:</span>
-          <span>₹0.00</span>
+          <span>₹0</span>
         </div>
         <div className="flex justify-between text-lg text-gray-900">
           <span>Discount:</span>
-          <span>₹0.00</span>
+          <span>₹0</span>
         </div>
         <div className="flex justify-between text-lg font-semibold text-gray-900 border-t border-gray-200 pt-2">
           <span>Total:</span>

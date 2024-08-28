@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CityForm = ({ onClose }) => {
   const [cityName, setCityName] = useState('');
@@ -14,6 +16,7 @@ const CityForm = ({ onClose }) => {
         setStates(data);
       } catch (error) {
         console.error('Error fetching states:', error);
+        toast.error('Failed to fetch states.');
       }
     };
     fetchStates();
@@ -66,16 +69,17 @@ const CityForm = ({ onClose }) => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('City added successfully!');
+        toast.success('City added successfully!');
         setCityName(''); // Clear the input field
         setStateId(''); // Clear the state selection
         setErrors({}); // Clear errors after successful submission
         onClose();
       } else {
-        alert('Failed to add city: ' + result.message);
+        toast.error('Failed to add city: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred while adding the city.');
     }
   };
 
@@ -135,9 +139,12 @@ const CityForm = ({ onClose }) => {
           Add City
         </button>
       </form>
+      {/* Add the ToastContainer component to the component tree */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default CityForm;
+
 

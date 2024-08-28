@@ -11,7 +11,7 @@ const Stores = (onClose) => {
   const [selectedStore, setSelectedStore] = useState(null);
   const [showStoreForm, setShowStoreForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [storesPerPage, setStoresPerPage] = useState(5);
+  const [storesPerPage, setStoresPerPage] = useState(10);
   const [editingStore, setEditingStore] = useState(null);
 
   useEffect(() => {
@@ -172,8 +172,9 @@ const Stores = (onClose) => {
             onChange={handleStoresPerPageChange}
             className="border border-gray-300 rounded py-1 px-2 text-gray-700"
           >
-            <option value="5">5</option>
+            
             <option value="10">10</option>
+            <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
           </select>
@@ -237,59 +238,71 @@ const Stores = (onClose) => {
        </div>
       }
       {selectedStore &&
-       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-         <div className="bg-white p-8 rounded-lg shadow-lg">
-           <h2 className="text-xl font-bold mb-4">Store Details</h2>
-           <p><strong>ID:</strong> {selectedStore.id}</p>
-           <p><strong>Name:</strong> {selectedStore.name}</p>
-           <p><strong>Status:</strong> {selectedStore.is_active ? 'Active' : 'Inactive'}</p>
-           <p><strong>Popularity:</strong> {selectedStore.is_popular ? 'Popular' : 'Not Popular'}</p>
-           <button onClick={handleCloseModal} className="mt-4 bg-red-500 text-white py-2 px-4 rounded">Close</button>
-         </div>
-       </div>
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-300 max-w-sm w-full">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Store Details</h2>
+        <p className="text-gray-700 mb-2"><strong>ID:</strong> {selectedStore.id}</p>
+        <p className="text-gray-700 mb-2"><strong>Name:</strong> {selectedStore.name}</p>
+        <p className="text-gray-700 mb-2"><strong>Status:</strong> {selectedStore.is_active ? 'Active' : 'Inactive'}</p>
+        <p className="text-gray-700 mb-4"><strong>Popularity:</strong> {selectedStore.is_popular ? 'Popular' : 'Not Popular'}</p>
+        <button 
+          onClick={handleCloseModal} 
+          className="mt-4 bg-red-600 text-white py-2 px-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+    
       }
       {editingStore &&
        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-         <div className="bg-white p-8 rounded-lg shadow-lg">
-           <h2 className="text-xl font-bold mb-4">Edit Store</h2>
-           <div className="mb-4">
-             <label className="block text-gray-700">Status</label>
-             <button
-               onClick={() => handleToggleChange('is_active')}
-               className={`px-4 py-2 rounded ${editingStore.is_active === '1' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-700'}`}
-             >
-               {editingStore.is_active === '1' ? 'Active' : 'Inactive'}
-             </button>
-           </div>
-           <div className="mb-4">
-             <label className="block text-gray-700">Popularity</label>
-             <button
-               onClick={() => handleToggleChange('is_popular')}
-               className={`px-4 py-2 rounded ${editingStore.is_popular === '1' ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
-             >
-               {editingStore.is_popular === '1' ? 'Popular' : 'Not Popular'}
-             </button>
-           </div>
+       <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 max-w-md w-full">
+         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Edit Store</h2>
+         
+         <div className="mb-6">
+           <label className="block text-gray-700 font-medium mb-2">Status</label>
+           <button
+             onClick={() => handleToggleChange('is_active')}
+             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${editingStore.is_active === '1' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`}
+           >
+             {editingStore.is_active === '1' ? 'Active' : 'Inactive'}
+           </button>
+         </div>
+         
+         <div className="mb-6">
+           <label className="block text-gray-700 font-medium mb-2">Popularity</label>
+           <button
+             onClick={() => handleToggleChange('is_popular')}
+             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${editingStore.is_popular === '1' ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`}
+           >
+             {editingStore.is_popular === '1' ? 'Popular' : 'Not Popular'}
+           </button>
+         </div>
+         
+         <div className="flex gap-2">
            <button
              onClick={handleSaveEdit}
-             className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
+             className="bg-primary-green text-white py-2 px-4 rounded-lg hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300 mt-4"
            >
              Save
            </button>
            <button
              onClick={handleCancelEdit}
-             className="bg-gray-500 text-white py-2 px-4 rounded"
+             className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all duration-300 mt-4"
            >
              Cancel
            </button>
            <button
              onClick={handleDeleteStore}
-             className="bg-red-500 text-white py-2 px-4 rounded mt-4"
+             className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 mt-4"
            >
              Delete
            </button>
          </div>
        </div>
+     </div>
+     
       }
     </div>
   );

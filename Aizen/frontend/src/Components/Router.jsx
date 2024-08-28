@@ -23,6 +23,8 @@ import AboutUs from "./AboutUs";
 import DalsList from "./Aizen/DalsList";
 import FlowersList from "./Aizen/FlowersList";
 import OilsList from "./Aizen/OilsList";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsAndConditions from "./TermsAndConditions";
 
 const RouterComponent = () => {
   return (
@@ -33,6 +35,8 @@ const RouterComponent = () => {
         <Route path="/home/*" element={<Homepage />} />
         <Route path="/*" element={<Homepage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/aizen/*" element={<AizenView />} />
           <Route path ="/product/:id" element={<ProduceDetailPage/>}/>
           <Route path="/aizen-admin/*" element={<AdminView />} />

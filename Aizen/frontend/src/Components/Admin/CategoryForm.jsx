@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoryForm = ({ onClose }) => {
   const [categoryName, setCategoryName] = useState('');
@@ -45,16 +47,17 @@ const CategoryForm = ({ onClose }) => {
 
       const result = await response.json();
       if (result.success) {
-        alert('Category added successfully!');
+        toast.success('Category added successfully!');
         setCategoryName('');
         setCategoryDescription('');
         setCategoryImage(null);
         onClose();
       } else {
-        alert('Failed to add category: ' + result.message);
+        toast.error('Failed to add category: ' + result.message);
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('An error occurred while adding the category.');
     }
   };
 
@@ -142,8 +145,11 @@ const CategoryForm = ({ onClose }) => {
           </div>
         </form>
       </div>
+      {/* Add ToastContainer to enable Toastify notifications */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default CategoryForm;
+

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Import toast from react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for toastify
+
+// Initialize toast notifications
+toast.configure();
 
 const ProductForm = ({ onClose }) => {
   const [categories, setCategories] = useState([]);
@@ -151,20 +156,21 @@ const ProductForm = ({ onClose }) => {
           image: null,
         });
         setSubcategories([]);
+        toast.success('Product added successfully!'); // Use toastify for success
         onClose(); // Close the form after successful submission
       } else {
-        alert('Failed to add product: ' + response.data.message);
+        toast.error('Failed to add product: ' + response.data.message); // Use toastify for error
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.'); // Use toastify for error
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center custom-scrollbar justify-center z-50">
       <div className="relative bg-white shadow-lg rounded-lg w-full max-w-3xl p-6">
         <button
           onClick={onClose}
@@ -175,7 +181,7 @@ const ProductForm = ({ onClose }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 custom-scrollbar">
           {loading && <p className="text-blue-500 mb-4">Loading...</p>}
           <h2 className="text-xl font-bold mb-4">Add New Product</h2>
           <div className="max-h-96 overflow-y-auto">
@@ -352,6 +358,7 @@ const ProductForm = ({ onClose }) => {
 };
 
 export default ProductForm;
+
 
 
 

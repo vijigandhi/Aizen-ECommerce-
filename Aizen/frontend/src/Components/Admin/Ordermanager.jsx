@@ -9,14 +9,13 @@ const OrderManager = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage, setOrdersPerPage] = useState(5);
+  const [ordersPerPage, setOrdersPerPage] = useState(10);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await fetch('http://localhost:8000/controller/Admin/Order/getOrders.php');
         const data = await response.json();
-        console.log(data);
         setOrders(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -37,21 +36,23 @@ const OrderManager = () => {
   const handleSaveEdit = async () => {
     console.log('Saving order with ID:', editingOrder.id);
     console.log('New status:', editingOrder.Status);
-  
+
     try {
       const response = await axios.post('http://localhost:8000/controller/Admin/manageOrders.php', {
         order_id: editingOrder.id,
         status: editingOrder.Status
       }, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
-  
+
+      console.log('Response data:', response.data);
+
       if (response.data.success) {
         setOrders(prevOrders =>
           prevOrders.map(order =>
-            order.id === editingOrder.id ? editingOrder : order
+            order.id === editingOrder.id ? { ...order, Status: editingOrder.Status } : order
           )
         );
         setEditingOrder(null);
@@ -62,7 +63,6 @@ const OrderManager = () => {
       console.error('Error updating order:', error);
     }
   };
-  
 
   const handleDeleteOrder = async () => {
     if (window.confirm('Are you sure you want to delete this order?')) {
@@ -158,8 +158,8 @@ const OrderManager = () => {
             onChange={handleOrdersPerPageChange}
             className="border border-gray-300 rounded py-1 px-2 text-gray-700"
           >
-            <option value="5">5</option>
             <option value="10">10</option>
+            <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
           </select>
@@ -184,82 +184,133 @@ const OrderManager = () => {
               </th>
               <th
                 className="py-3 px-6 text-left cursor-pointer"
-                onClick={() => handleSort('status')}
+                onClick={() => handleSort('order_status')}
               >
-                Status
+                Order Status
               </th>
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm border-0 h-45 max-h-45 overflow-y-auto">
+          <tbody>
             {currentOrders.map((order) => (
-              <tr key={order.order_id} className="border-b border-r-0 border-gray-200 h-8 hover:bg-gray-100 transition duration-300">
+              <tr key={order.id} className="border-b">
                 <td className="py-3 px-6">{order.id}</td>
-                <td className="py-3 border-l-0 border-r-0 px-6">{order.shipping_name}</td>
-                <td className="py-3 border-l-0 border-r-0 px-6">{order.Status}</td>
+                <td className="py-3 px-6">{order.shipping_name}</td>
+                <td className="py-3 px-6">{order.Status}</td>
                 <td className="py-3 px-6 text-center">
-                  <FaEye className="inline-block cursor-pointer text-green-600" onClick={() => handleViewClick(order)} />
-                  <FaEdit className="inline-block cursor-pointer text-blue-600 ml-2" onClick={() => handleEditClick(order)} />
+                <button
+                    className="text-green-500 hover:text-green-700 mr-2"
+                    onClick={() => handleViewClick(order)}
+                  >
+                    <FaEye />
+                  </button>
+                  <button
+                    className="text-blue-500 hover:text-blue-700 "
+                    onClick={() => handleEditClick(order)}
+                  >
+                    <FaEdit />
+                  </button>
+                  
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="flex justify-between items-center mt-4">
+      <div className="mt-4 flex justify-between items-center">
         <div>
-          Showing {indexOfFirstOrder + 1} to {indexOfLastOrder > filteredOrders.length ? filteredOrders.length : indexOfLastOrder} of {filteredOrders.length} entries
+          <span className="text-gray-700">
+            Page{' '}
+            <strong>
+              {currentPage} of {pageNumbers.length}
+            </strong>
+          </span>
         </div>
-        <div className="flex space-x-1">
+        <div>
+          <button
+            className="p-2 border border-gray-300 rounded mr-2"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
           {pageNumbers.map(number => (
             <button
               key={number}
+              className={`px-5 border border-gray-300 rounded mr-2 ${currentPage === number ? 'bg-primary-green text-white' : 'text-gray-700'}`}
               onClick={() => paginate(number)}
-              className={`px-3 py-1 rounded ${currentPage === number ? 'bg-primary-green text-white' : 'bg-gray-300 text-gray-700'}`}
             >
               {number}
             </button>
           ))}
+          <button
+            className="p-2 border border-gray-300 rounded"
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, pageNumbers.length))}
+            disabled={currentPage === pageNumbers.length}
+          >
+            Next
+          </button>
         </div>
       </div>
 
-      {selectedOrder &&
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2">
-            <h3 className="text-2xl font-semibold mb-4">Order Details</h3>
-            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-            <p><strong>Shipping Name:</strong> {selectedOrder.shipping_name}</p>
-            <p><strong>Status:</strong> {selectedOrder.Status}</p>
-            <button onClick={handleCloseModal} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Close</button>
-          </div>
-        </div>
-      }
+      {selectedOrder && (
+       <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-60 flex items-center justify-center">
+       <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-300 max-w-sm w-full">
+         <h3 className="text-2xl font-semibold mb-6 text-gray-800">Order Details</h3>
+         <p className="text-gray-700 mb-2"><strong>Order ID:</strong> {selectedOrder.id}</p>
+         <p className="text-gray-700 mb-2"><strong>Shipping Name:</strong> {selectedOrder.shipping_name}</p>
+         <p className="text-gray-700 mb-4"><strong>Status:</strong> {selectedOrder.Status}</p>
+         <button 
+           className="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300"
+           onClick={handleCloseModal}
+         >
+           Close
+         </button>
+       </div>
+     </div>
+     
+      )}
 
-      {editingOrder &&
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2">
-            <h3 className="text-2xl font-semibold mb-4">Edit Order</h3>
-            <p><strong>Order ID:</strong> {editingOrder.id}</p>
-            <p><strong>Shipping Name:</strong> {editingOrder.shipping_name}</p>
-            <label htmlFor="status" className="block text-gray-700">Status:</label>
+      {editingOrder && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-60 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 max-w-md w-full">
+          <h3 className="text-2xl font-semibold mb-6 text-gray-800">Edit Order</h3>
+          <label className="block mb-4">
+            <span className="text-gray-700 font-medium">Order Status</span>
             <select
-              id="status"
               value={editingOrder.Status}
               onChange={(e) => setEditingOrder({ ...editingOrder, Status: e.target.value })}
-              className="border border-gray-300 rounded p-2 w-full"
+              className="form-select mt-1 block w-full border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-300"
             >
               <option value="Order Placed">Order Placed</option>
               <option value="Out for Delivery">Out for Delivery</option>
               <option value="Delivered">Delivered</option>
             </select>
-            <div className="flex justify-between mt-4">
-              <button onClick={handleSaveEdit} className="bg-green-600 text-white px-4 py-2 rounded">Save</button>
-              <button onClick={handleDeleteOrder} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-              <button onClick={handleCancelEdit} className="bg-blue-600 text-white px-4 py-2 rounded">Cancel</button>
-            </div>
+          </label>
+          <div className="flex justify-end gap-2">
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300"
+              onClick={handleSaveEdit}
+            >
+              Save
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all duration-300"
+              onClick={handleCancelEdit}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300"
+              onClick={handleDeleteOrder}
+            >
+              Delete
+            </button>
           </div>
         </div>
-      }
+      </div>
+      
+      )}
     </div>
   );
 };
